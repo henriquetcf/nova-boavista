@@ -7,10 +7,6 @@ import {
   Calendar, 
   Car, 
   CheckCircle2, 
-  X,
-  FileText,
-  User,
-  Info,
   ReceiptText,
   Plus
 } from "lucide-react";

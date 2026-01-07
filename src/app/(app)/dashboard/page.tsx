@@ -1,8 +1,8 @@
 'use client'
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { 
   Globe, TrendingUp, Users, Briefcase, 
-  CheckCircle2, Plus, Search, Target, 
+  CheckCircle2, Plus, Target, 
   Zap, AlertCircle, LayoutDashboard, ChevronRight, Clock, Wallet,
   ExternalLink
 } from 'lucide-react';
@@ -45,13 +45,13 @@ export default function DashboardHome() {
     CONCLUIDO: { label: 'Concluido', color: 'bg-green-500' },
   };
 
-  const [searchTerm, setSearchTerm] = React.useState('');
+  // const [searchTerm, setSearchTerm] = React.useState('');
 
   // Filtra os processos recentes baseado no que foi digitado
-  const filteredProcesses = data?.recentActivities?.filter((proc: any) => 
-    proc.plate.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    proc.clientName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // const filteredProcesses = data?.recentActivities?.filter((proc: any) => 
+  //   proc.plate.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //   proc.clientName.toLowerCase().includes(searchTerm.toLowerCase())
+  // );
 
   console.log('data', data);  
 
