@@ -34,7 +34,6 @@ async function main() {
       create: bank,
     })
   }
-
   console.log('✅ Seed finalizado com sucesso!')
 }
 
