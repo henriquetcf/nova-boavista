@@ -1,0 +1,180 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String    @id @default(cuid())
+  name      String?
+  email     String    @unique
+  password  String
+  image     String?
+  role      Role      @default(USER)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  processes Process[]
+}
+
+model Client {
+  id           String                @id @default(cuid())
+  name         String
+  cpf          String?               @unique
+  cnpj         String?               @unique
+  rg           String?
+  phone        String?
+  address      String?
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+  processes    Process[]
+  transactions TransactionMoviment[]
+}
+
+model Service {
+  id                String        @id @default(cuid())
+  name              String        @unique
+  baseValue         Decimal       @default(0)
+  requiredDocuments String?
+  finalValue        Decimal
+  profit            Decimal
+  serviceItems      ServiceItem[]
+}
+
+model ServiceItem {
+  id         String     @id @default(cuid())
+  name       String
+  baseValue  Decimal
+  finalValue Decimal
+  profit     Decimal
+  processId  String
+  serviceId  String
+  isPaid     Boolean    @default(false)
+  documents  Document[]
+  process    Process    @relation(fields: [processId], references: [id])
+  service    Service    @relation(fields: [serviceId], references: [id])
+}
+
+model Process {
+  id           String                @id @default(cuid())
+  plate        String
+  renavam      String?
+  status       Status                @default(PENDENTE)
+  totalValue   Decimal               @default(0)
+  clientName   String
+  clientId     String
+  userId       String
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+  totalProfit  Decimal               @default(0)
+  paidValue    Decimal               @default(0)
+  documents    Document[]
+  client       Client                @relation(fields: [clientId], references: [id])
+  user         User                  @relation(fields: [userId], references: [id])
+  movements    ProcessMovement[]
+  services     ServiceItem[]
+  transactions TransactionMoviment[]
+}
+
+model Document {
+  id            String       @id @default(cuid())
+  name          String
+  isUploaded    Boolean      @default(false)
+  fileUrl       String?
+  processId     String
+  serviceItemId String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  process       Process      @relation(fields: [processId], references: [id], onDelete: Cascade)
+  serviceItem   ServiceItem? @relation(fields: [serviceItemId], references: [id])
+}
+
+model Bank {
+  id           String        @id @default(cuid())
+  name         String        @unique
+  code         String        @unique
+  cnpj         String        @unique
+  bankAccounts BankAccount[]
+}
+
+model BankAccount {
+  id                     String                @id @default(cuid())
+  cnpj                   String
+  agency                 String
+  account                String
+  balance                Decimal
+  bankId                 String
+  bank                   Bank                  @relation(fields: [bankId], references: [id])
+  movementsAsDestination TransactionMoviment[] @relation("DestinationMovements")
+  movementsAsOrigin      TransactionMoviment[] @relation("OriginMovements")
+}
+
+model TransactionMoviment {
+  id                   String          @id @default(cuid())
+  type                 TransactionType
+  method               PaymentMethod
+  value                Decimal
+  description          String?
+  date                 DateTime        @default(now())
+  originAccountId      String?
+  destinationAccountId String?
+  processId            String?
+  clientId             String?
+  createdAt            DateTime        @default(now())
+  client               Client?         @relation(fields: [clientId], references: [id])
+  destinationAccount   BankAccount?    @relation("DestinationMovements", fields: [destinationAccountId], references: [id])
+  originAccount        BankAccount?    @relation("OriginMovements", fields: [originAccountId], references: [id])
+  process              Process?        @relation(fields: [processId], references: [id])
+}
+
+model ProcessMovement {
+  id          String   @id @default(cuid())
+  processId   String
+  status      Status
+  description String?
+  createdAt   DateTime @default(now())
+  process     Process  @relation(fields: [processId], references: [id], onDelete: Cascade)
+
+  @@index([processId])
+}
+
+enum TransactionType {
+  DEPOSIT
+  TRANSFER
+  CLIENT_INCOME
+  TAX_OUT
+  EXPENSE
+}
+
+enum PaymentMethod {
+  PIX
+  CREDIT_CARD
+  DEBIT_CARD
+  CASH
+  BANK_TRANSFER
+  BOLETO
+  DEPOSIT
+}
+
+enum ProcessType {
+  TRANSFERENCIA
+  LICENCIAMENTO
+  EMPLACAMENTO
+  OUTROS
+}
+
+enum Status {
+  PENDENTE
+  AGUARDANDO_PAGAMENTO
+  AGUARDANDO_EMISSAO
+  EM_EXIGENCIA
+  PRONTO_ENTREGA
+  CONCLUIDO
+  CANCELADO
+}
+
+enum Role {
+  USER
+  ADMIN
+}

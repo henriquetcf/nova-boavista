@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Next.js: Debug Full App",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run dev:all",
+      "serverReadyAction": {
+        "pattern": "started server on .+, url: (https?://.+)",
+        "action": "openExternally"
+      }
+    }
+  ]
+}
