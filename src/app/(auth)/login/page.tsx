@@ -2,7 +2,7 @@
 
 import { LoginInput } from "@/models/auth/auth.model";
 import { useAuthStore } from "@/store/auth/useAuthStore";
-import { Car, ClipboardList, FileCheck, ShieldCheck } from "lucide-react"
+import { Car } from "lucide-react"
 import { useRouter } from "next/navigation";
 
 // import { Car, FileCheck, ShieldCheck, ClipboardList } from 

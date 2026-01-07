@@ -1,15 +1,16 @@
 import { fetchServicesAction, searchServicesAction } from '@/services/services/service.service';
+import { Service } from '@prisma/client';
 import { create } from 'zustand';
 
-interface Service {
-  id: string;
-  name: string;
-  baseValue: string;
-  finalValue: string;
-  requiredDocuments?: string;
-  description?: string;
-  createdAt?: Date;
-}
+// interface Service {
+//   id: string;
+//   name: string;
+//   baseValue: string;
+//   finalValue: string;
+//   requiredDocuments?: string;
+//   description?: string;
+//   createdAt?: Date;
+// }
 
 interface ServiceDataState {
   services: Service[];

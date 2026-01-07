@@ -1,7 +1,7 @@
 // components/ui/CommandSearch.tsx
 'use client'
-import React, { useState, useRef } from 'react';
-import { Search, Command, Car, User, ArrowRight } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Search, Command, Car, ArrowRight } from 'lucide-react';
 // import { useOnClickOutside } from '@/hooks/use-onclick-outside'; // Opcional: para fechar ao clicar fora
 
 export function CommandSearch({ onSelect, placeholder = "Buscar...", className }: any) {

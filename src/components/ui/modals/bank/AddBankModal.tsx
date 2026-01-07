@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react'; // Assumindo que você usa lucide, se não, pode remover
 
-export const AddAccountModal = ({ isOpen, onClose, onSave }) => {
+interface AddAccountModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (data: any) => void;
+}
+
+export const AddAccountModal = ({ isOpen, onClose, onSave }: AddAccountModalProps) => {
   const [formData, setFormData] = useState({
     bank: 'Nubank',
     nickname: '',

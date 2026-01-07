@@ -1,5 +1,5 @@
 'use client'
-import { ArrowLeft, Car, User, FileText, CheckCircle2, Clock, ShieldCheck, CreditCard } from 'lucide-react';
+import { ArrowLeft, Car, User, CheckCircle2, Clock, ShieldCheck, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import ProcessDrawer from '../process/ProcessDrawer';
 import { useState, useEffect } from 'react';

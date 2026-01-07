@@ -54,7 +54,7 @@ export const BankCard = ({ bank, cnpj, agency, account, balance = '1000' }: Bank
   const bankName = bank?.name as keyof typeof bankConfigs;
   const config = bankConfigs?.[bankName];
   
-  const copyToClipboard = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, text: string, label: string) => {
+  const copyToClipboard = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, text: string, label: string) => {
     e.stopPropagation();
     navigator.clipboard.writeText(text);
     toast.success(`${label} copiado!`);
@@ -124,7 +124,7 @@ export const BankCard = ({ bank, cnpj, agency, account, balance = '1000' }: Bank
             <span className="text-[12px] font-black text-gray-400 uppercase tracking-widest">Saldo em conta</span>
             <div className="flex items-center gap-1.5">
               <span className={`text-[19px] font-black tabular-nums ${showBalance ? 'text-emerald-500' : 'text-gray-300 dark:text-gray-700 blur-[3px]'}`}>
-                R$ {balance.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                R$ {balance.toLocaleString()}
               </span>
               {showBalance ? <EyeOff size={14} className="text-gray-400" /> : <Eye size={14} className="text-gray-400" />}
             </div>

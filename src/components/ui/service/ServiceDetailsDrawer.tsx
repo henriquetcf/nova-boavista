@@ -1,9 +1,9 @@
 'use client'
 import React from 'react';
 import { 
-  Receipt, TrendingUp, CheckCircle2, 
-  Clock, ArrowUpRight, FileText, 
-  Wallet, PieChart, Tag, Hash,
+  Receipt, TrendingUp, 
+  ArrowUpRight, FileText, 
+  Wallet, Tag, Hash,
   Layers,
   BarChart3,
   Edit3
@@ -15,7 +15,7 @@ import { Service } from '@prisma/client';
 interface ServiceDetailsDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  service: Service;
+  service: Service | null;
 }
 
 export function ServiceDetailsDrawer({ isOpen, onClose, service }: ServiceDetailsDrawerProps) {
@@ -120,7 +120,7 @@ export function ServiceDetailsDrawer({ isOpen, onClose, service }: ServiceDetail
               </div>
               <div className="p-4 bg-gray-50 dark:bg-white/[0.02] rounded-2xl border border-gray-100 dark:border-white/5">
                  <p className="text-[11px] font-bold text-gray-800 dark:text-white uppercase leading-tight italic truncate">
-                    Processo #{service.processId?.slice(-8).toUpperCase()}
+                    Processo #{service.id?.slice(-8).toUpperCase()}
                  </p>
               </div>
            </div>
@@ -173,7 +173,7 @@ export function ServiceDetailsDrawer({ isOpen, onClose, service }: ServiceDetail
               </div>
               <div>
                  <p className="text-xl font-black text-gray-900 dark:text-white italic leading-none">
-                    {service.serviceItems?.length || 0}
+                    {0}
                  </p>
                  <p className="text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] mt-2">Volume de Vendas</p>
               </div>
@@ -186,7 +186,7 @@ export function ServiceDetailsDrawer({ isOpen, onClose, service }: ServiceDetail
               </div>
               <div>
                  <p className="text-xl font-black text-[#d4af37] italic leading-none">
-                    {formatCurrency((service.serviceItems?.length || 0) * Number(service.profit))}
+                    {formatCurrency((0) * Number(service.profit))}
                  </p>
                  <p className="text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] mt-2">Rentabilidade Total</p>
               </div>
