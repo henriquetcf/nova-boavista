@@ -63,8 +63,8 @@ export function NavbarSearch() {
             
             {/* A div de scroll deve envolver o MAP */}
             <div className="max-h-60 overflow-y-auto">
-              {searchResults?.length > 0 ? (
-                searchResults.map((item: any) => (
+              {searchResults && searchResults?.length > 0 ? (
+                searchResults?.map((item) => (
                   <button 
                     key={item.id} 
                     onClick={() => handleSelect(item)} 
