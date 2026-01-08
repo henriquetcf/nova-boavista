@@ -1,6 +1,9 @@
 "use server"
 
+import { BankAccountEntity } from "@/domain/entities/bank-account.entity";
+import { EntityMapper } from "@/domain/infra/mappers/entity-mapper";
 import { prisma } from "@/lib/prisma/prisma"; // Verifique onde está seu prisma client
+import { BankAccountInput } from "@/models/bankAccount/bank_account_model";
 import { Decimal } from "@prisma/client/runtime/client";
 import { revalidatePath } from "next/cache";
 
@@ -23,7 +26,7 @@ async function createMovement(
   }
 ) {
   const method = data.method ?? 'DEPOSIT';
-  return await tx.transactionMoviment.create({
+  return await tx.transactionMovement.create({
     data: {
       type: data.type,
       method: method,
@@ -66,10 +69,7 @@ export async function fetchBankAccountsAction() {
 
     // Como o Prisma retorna Decimal, o Next pode reclamar na serialização para o Client
     // Vamos garantir que o balance vá como string ou número
-    const serializedAccounts = accounts.map(acc => ({
-      ...acc,
-      balance: acc.balance.toString() // Transforma Decimal em string para o front
-    }));
+    const serializedAccounts = EntityMapper.deserializeList(BankAccountEntity, accounts);
 
     return { success: true, accounts: serializedAccounts };
   } catch (error) {
@@ -79,7 +79,7 @@ export async function fetchBankAccountsAction() {
 }
 
 // Action para criar a conta
-export async function createBankAccountAction(data: any) {
+export async function createBankAccountAction(data: BankAccountInput) {
   try {
     const newAccount = await prisma.bankAccount.create({
       data: {
@@ -303,7 +303,7 @@ export async function processTaxPaymentAction(data: TransactionBase & { originId
 
 export async function fetchTransactionMovimentsAction() {
   try {
-    const movements = await prisma.transactionMoviment.findMany({
+    const movements = await prisma.transactionMovement.findMany({
       include: {
         // Traz os dados da conta de origem e o banco dela
         originAccount: {
@@ -340,55 +340,3 @@ export async function fetchTransactionMovimentsAction() {
     return { success: false, message: "Erro ao carregar extrato." };
   }
 }
-// export async function createBankAccountAction(formData: any) {
-//   try {
-//     // 1. Validação com Zod no Server-side
-//     const validation = BankAccountSchema.safeParse(formData);
-
-//     if (!validation.success) {
-//       // Formata os erros para o padrão da sua Store Record<string, string[]>
-//       const fieldErrors = validation.error.flatten().fieldErrors;
-//       return { 
-//         success: false, 
-//         errors: fieldErrors 
-//       };
-//     }
-
-//     const { bankId, cnpj, agency, account, balance } = validation.data;
-
-//     // 2. Criação no Banco de Dados
-//     await prisma.bankAccount.create({
-//       data: {
-//         bankId,
-//         cnpj,
-//         agency,
-//         account,
-//         balance: balance, // O Prisma converte a string "1500.00" para Decimal automaticamente
-//       }
-//     });
-
-//     // 3. Revalida a página para atualizar os cards de banco
-//     revalidatePath("/financeiro"); // Ajuste para a sua rota real
-
-//     return { 
-//       success: true, 
-//       message: "Conta bancária cadastrada com sucesso!" 
-//     };
-
-//   } catch (error: any) {
-//     console.error("[CREATE_BANK_ACCOUNT_ERROR]:", error);
-    
-//     // Tratamento de erros de unicidade (P2002 do Prisma)
-//     if (error.code === 'P2002') {
-//       return {
-//         success: false,
-//         message: "Esta conta já está cadastrada no sistema."
-//       };
-//     }
-
-//     return { 
-//       success: false, 
-//       message: "Erro interno ao processar o cadastro." 
-//     };
-//   }
-// }

@@ -1,3 +1,4 @@
+import { ProcessEntity } from '@/domain/entities/process.entity';
 import getDashboardData, { getEntityDetailsAction, searchGlobalAction } from '@/domain/services/dashboard/dashboard_service';
 import { create } from 'zustand';
 
@@ -14,10 +15,10 @@ interface DashboardDataState {
   isLoading: boolean;
   error: string | null;
 
-  searchResults: any[];
+  searchResults?: ProcessEntity[];
   isSearching: boolean;
 
-  selectedEntity: any;
+  selectedEntity: ProcessEntity | null;
   selectEntity: (id: string | null, type: 'PROCESS' | 'CLIENT') => Promise<void>;
 
   // Filtros
@@ -70,6 +71,7 @@ export const useDashboardDataStore = create<DashboardDataState>((set, get) => ({
       set({ data: result });
       set({ isLoading: false });
     } catch (err) {
+      console.error("[DASHBOARD STORE] Erro ao buscar dashboard:", err);
       set({ error: "Erro ao carregar serviços", isLoading: false });
     }
   },
@@ -85,6 +87,7 @@ export const useDashboardDataStore = create<DashboardDataState>((set, get) => ({
       const results = await searchGlobalAction(query);
       set({ searchResults: results, isSearching: false });
     } catch (err) {
+      console.error("[DASHBOARD STORE] Erro ao buscar global search:", err);
       set({ searchResults: [], isSearching: false });
     }
   },
@@ -97,8 +100,9 @@ export const useDashboardDataStore = create<DashboardDataState>((set, get) => ({
     };
     try {
       const details = await getEntityDetailsAction(id, type);
-      set({ selectedEntity: { ...details, type }, isLoading: false });
+      set({ selectedEntity: new ProcessEntity({ ...details }), isLoading: false });
     } catch (err) {
+      console.error("[DASHBOARD STORE] Erro ao buscar detalhes da entidade:", err);
       set({ isLoading: false });
     }
   },

@@ -3,16 +3,21 @@ import { BaseEntity } from './base.entity';
 import { ServiceItemEntity } from './service-item.entity';
 import { DocumentEntity } from './document.entity';
 import { Status } from '@prisma/client';
+import { Decimal } from '@prisma/client/runtime/client';
+import { ClientEntity } from './client.entity';
+import { UserEntity } from './user.entity';
+import { ProcessMovementEntity } from './process-movement.entity';
+import { TransactionMovementEntity } from './transaction-movement.entity';
 // Importe as outras entidades (Client, User, etc) conforme criar os arquivos
 
 export class ProcessEntity extends BaseEntity<ProcessEntity> {
   id: string = "";
   plate: string = "";
-  renavam: string | null = null;
-  status: string = Status.PENDENTE; // Pode usar o Enum do Prisma aqui se preferir
+  renavam: string = "";
+  status: Status = Status.PENDENTE; // Pode usar o Enum do Prisma aqui se preferir
 
   @Type(() => String)
-  totalValue: string = "0";
+  totalValue: Decimal = new Decimal(0);
 
   clientName: string = "";
   clientId: string = "";
@@ -25,10 +30,10 @@ export class ProcessEntity extends BaseEntity<ProcessEntity> {
   updatedAt: Date = new Date();
 
   @Type(() => String)
-  totalProfit: string = "0";
+  totalProfit: Decimal = new Decimal(0);
 
   @Type(() => String)
-  paidValue: string = "0";
+  paidValue: Decimal = new Decimal(0);
 
   // RELAÇÕES
   // @Type(() => DocumentEntity)
@@ -38,8 +43,8 @@ export class ProcessEntity extends BaseEntity<ProcessEntity> {
   services: ServiceItemEntity[] = [];
 
   // Outras relações que você pode ativar depois:
-  // client: ClientEntity;
-  // user: UserEntity;
-  // movements: ProcessMovementEntity[];
-  // transactions: TransactionMovimentEntity[];
+  client: ClientEntity = new ClientEntity();
+  user: UserEntity = new UserEntity();
+  movements: ProcessMovementEntity[] = [];
+  transactions: TransactionMovementEntity[] = [];
 }

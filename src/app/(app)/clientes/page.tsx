@@ -7,14 +7,14 @@ import { Filters } from "@/components/ui/Filters";
 import { Pagination } from "@/components/navigation/Pagination";
 import { useLoading } from "@/components/AppLoading";
 import { ClientDetailsDrawer } from "@/components/ui/client/ClientDetailsDrawer";
-import { Client } from "@prisma/client";
+import { ClientEntity } from "@/domain/entities/client.entity";
 
 export default function ClientList() {
   const { clients, isLoading, fetchClients, searchQuery, statusFilter, currentPage, itemsPerPage, setSearchQuery, setStatusFilter, setCurrentPage } = useClientDataStore();
   const { startLoading, stopLoading } = useLoading();
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [selectedClient, setSelectedClient] = useState<ClientEntity | null>(null);
 
   useEffect(() => {
     startLoading("Sincronizando clientes...");
@@ -75,7 +75,7 @@ export default function ClientList() {
         {paginatedData.map((client) => (
           <div 
             key={client.id}
-            onClick={() => {setSelectedClient(client as Client); setIsDrawerOpen(true)}}
+            onClick={() => {setSelectedClient(client); setIsDrawerOpen(true)}}
             className="group relative bg-white dark:bg-[#1a1a1a] border border-gray-100 dark:border-gray-800 p-3 pr-5 rounded-2xl hover:border-[#800020]/20 hover:shadow-lg hover:shadow-[#800020]/5 transition-all duration-300 cursor-default overflow-hidden"
           >
             {/* Glow Effect */}
@@ -99,7 +99,7 @@ export default function ClientList() {
                     <div className="flex items-center gap-1.5 px-2 py-0.5 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-md">
                       <Fingerprint size={12} className="text-gray-400" />
                       <span className="text-[11px] font-bold text-gray-600 dark:text-gray-400 tabular-nums">
-                        {client.cpf ? client.cpf : client.cnpj}
+                        {client.document}
                       </span>
                     </div>
                     

@@ -1,5 +1,5 @@
-import { ServiceSchema } from '@/models/services/services.model';
 import { createServiceAction } from '@/domain/services/services/service.service';
+import { ServiceInput, ServiceSchema } from '@/models/services/services.model';
 import { create } from 'zustand';
 
 // Lista de documentos padrão para todo despachante
@@ -19,14 +19,14 @@ interface ServiceFormData {
 interface ServiceStore {
   formData: ServiceFormData;
   isLoading: boolean;
-  errors: Record<string, string[] | undefined>;
+  errors: Record<string, string | undefined>;
   setField: (field: keyof ServiceFormData, value: string | string[]) => void;
-  setErrors: (errors: Record<string, string[] | undefined>) => void;
+  setErrors: (errors: Record<string, string | undefined>) => void;
   setLoading: (loading: boolean) => void;
   addDocument: (doc: string) => void;
   removeDocument: (index: number) => void;
   create: () => Promise<{ success?: boolean; error?: string }>;
-  validate: (data: any, schema: any) => boolean;
+  validate: (data: ServiceInput, schema: typeof ServiceSchema) => boolean;
   reset: () => void;
 }
 

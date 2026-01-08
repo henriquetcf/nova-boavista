@@ -1,10 +1,9 @@
 "use client"
-import { useState, useTransition } from "react";
-import { X, Save, FileText, Info, Check, Plus } from "lucide-react";
+import { useTransition } from "react";
+import { Save, FileText } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { createServiceAction } from "@/domain/services/services/service.service";
 import { FormField } from "@/components/ui/FormField";
-import { DEFAULT_DOCUMENTS, useServiceStore } from "@/store/services/create_service_store";
+import { useServiceStore } from "@/store/services/create_service_store";
 import { Button } from "@/components/ui/Button";
 import { PageHeader } from "@/components/ui/header/PageHeader";
 import { DocumentChecklist } from "@/components/ui/document/DocumentCheckList";
@@ -12,17 +11,8 @@ import { formatUtils } from "@/lib/formatUtils";
 
 export default function NewServicePage() {
   const { formData, isLoading, errors, setField, create } = useServiceStore();
-  // const [currentDoc, setCurrentDoc] = useState("");
   const [ isPending, startTransition ] = useTransition();
   const router = useRouter();
-
-  // const handleAddDoc = (e: React.KeyboardEvent) => {
-  //   if (e.key === 'Enter' && currentDoc.trim()) {
-  //     e.preventDefault();
-  //     addDocument(currentDoc.trim().toUpperCase());
-  //     setCurrentDoc("");
-  //   }
-  // };
 
   const handleSubmit = async () => {
     startTransition(async () => {

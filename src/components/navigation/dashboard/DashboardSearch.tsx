@@ -54,7 +54,7 @@ export function DashboardSearch({ onSelect }: DashboardSearchProps) {
               isSearching ? (
                 <p className="p-4 text-[8px] animate-pulse">BUSCANDO...</p>
               ) :
-              searchResults?.map((item: any) => (
+              searchResults?.map((item) => (
                 <button 
                   key={item.id}
                   onClick={() => {

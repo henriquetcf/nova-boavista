@@ -1,19 +1,9 @@
+import { ServiceEntity } from '@/domain/entities/service.entity';
 import { fetchServicesAction, searchServicesAction } from '@/domain/services/services/service.service';
-import { Service } from '@prisma/client';
 import { create } from 'zustand';
 
-// interface Service {
-//   id: string;
-//   name: string;
-//   baseValue: string;
-//   finalValue: string;
-//   requiredDocuments?: string;
-//   description?: string;
-//   createdAt?: Date;
-// }
-
 interface ServiceDataState {
-  services: Service[];
+  services: ServiceEntity[] | null;
   isLoading: boolean;
   error: string | null;
 
@@ -31,9 +21,9 @@ interface ServiceDataState {
   
   // Actions
   fetchServices: () => Promise<void>;
-  getServiceById: (id: string) => Service | undefined;
+  getServiceById: (id: string) => ServiceEntity | undefined;
   // Útil para quando deletar ou atualizar um serviço via API
-  refreshService: (updatedService: Service) => void;
+  refreshService: (updatedService: ServiceEntity) => void;
   removeService: (id: string) => void;
   fetchServicesForSelect: () => Promise<void>;
 }
@@ -60,18 +50,19 @@ export const useServiceDataStore = create<ServiceDataState>((set, get) => ({
       set({ services: result.services });
       set({ isLoading: false });
     } catch (err) {
+      console.error("[SERVICE STORE] Erro ao buscar serviços:", err);
       set({ error: "Erro ao carregar serviços", isLoading: false });
     }
   },
 
-  getServiceById: (id: string) => get().services.find(s => s.id === id),
+  getServiceById: (id: string) => get().services?.find(s => s.id === id),
 
   refreshService: (updated) => set((state) => ({
-    services: state.services.map(s => s.id === updated.id ? updated : s)
+    services: state.services?.map(s => s.id === updated.id ? updated : s)
   })),
 
   removeService: (id) => set((state) => ({
-    services: state.services.filter(s => s.id !== id)
+    services: state.services?.filter(s => s.id !== id)
   })),
 
   fetchServicesForSelect: async () => {
@@ -82,7 +73,7 @@ export const useServiceDataStore = create<ServiceDataState>((set, get) => ({
       console.error("[SERVICE STORE] Erro ao buscar servicos:", result.message);
       return;
     }
-    set({ services: result.services as Service[] });
+    set({ services: result.services });
     set({ isLoading: false });
   },
 }));

@@ -1,6 +1,5 @@
 'use client'
-import React from 'react';
-import { Trash2, AlertCircle, X } from 'lucide-react';
+import { Trash2, AlertCircle } from 'lucide-react';
 import { Button } from '../Button';
 import { ModalWrapper } from './wrapper/ModalWrapper';
 

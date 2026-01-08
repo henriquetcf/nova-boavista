@@ -1,13 +1,13 @@
 import { create } from 'zustand'
-import { registerAction } from '@/domain/services/auth/auth.service'
 import { LoginInput, LoginSchema, RegisterInput, RegisterSchema } from '@/models/auth/auth.model'
 import { signIn } from 'next-auth/react';
+import { registerAction } from '@/domain/services/auth/auth.service';
 
 interface AuthState {
   isLoading: boolean;
   errors: Record<string, string>; // Ex: { email: "E-mail inválido", name: "Muito curto" }
   register: (data: RegisterInput) => Promise<boolean>;
-  validate: (data: any, schema: any) => boolean;
+  validate: (data: LoginInput, schema: typeof LoginSchema) => boolean;
   login: (data: LoginInput) => Promise<boolean>;
   clearErrors: () => void;
 }
@@ -43,12 +43,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     // 1. Validação com Zod no lado do Cliente (dentro da Store)
     const validation = get().validate(data, RegisterSchema);
     if (!validation) {
-      // const fieldErrors: Record<string, string> = {};
-      // validation.error.issues.forEach((issue) => {
-      //   const fieldName = String(issue.path[0]);
-      //   fieldErrors[fieldName] = issue.message;
-      // });
-      // set({ errors: fieldErrors, isLoading: false });
       return false;
     }
 

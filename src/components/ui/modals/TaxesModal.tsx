@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { ReceiptText, Check, Save } from 'lucide-react';
 import { FormField } from '../FormField';
 import { Button } from '../Button';
@@ -7,11 +7,12 @@ import { ModalWrapper } from './wrapper/ModalWrapper';
 import { useTransactionStore } from '@/store/transaction/transaction_store';
 import { useBankDataStore } from '@/store/bankAccount/bank_account_store';
 import { SearchableSelect } from '../SearchableSelect';
+import { ProcessEntity } from '@/domain/entities/process.entity';
 
 interface TaxesModalProps {
   isOpen: boolean;
   onClose: () => void;
-  process: any;
+  process: ProcessEntity | null;
   onSave: (data: any) => void;
 }
 
@@ -27,13 +28,14 @@ export function TaxesModal({ isOpen, onClose, process, onSave }: TaxesModalProps
   }, []);
 
   if (!process) return null;
+  if (isLoading) return <div>Loading...</div>;
 
   const totalToPay = process.services
-    ?.filter((s: any) => formData.services?.includes(s.id))
-    .reduce((acc: number, curr: any) => acc + Number(curr.baseValue), 0) || 0;
+    ?.filter((s) => formData.services?.includes(s.id))
+    .reduce((acc: number, curr) => acc + Number(curr.baseValue), 0) || 0;
 
   const services = process.services
-    ?.filter((s: any) => s.isPaid === false);
+    ?.filter((s) => s.isPaid === false);
 
   console.log('process', process);
   console.log('services', services);
@@ -56,7 +58,7 @@ export function TaxesModal({ isOpen, onClose, process, onSave }: TaxesModalProps
   const handleConfirm = async () => {
     setType('TAX_OUT');
     setField('method', 'DEPOSIT');
-    setField('value', totalToPay);
+    setField('value', totalToPay.toString());
     console.log('data', formData);
     if (formData.services?.length === 0) return;
 
@@ -125,7 +127,7 @@ export function TaxesModal({ isOpen, onClose, process, onSave }: TaxesModalProps
           <SearchableSelect 
             value={formData.originAccountId}
             onChange={(e) => setField('originAccountId', e)}
-            options={accounts.map((a: any) => ({ value: a.id, label: a.bank.name }))}
+            options={accounts.map((a) => ({ value: a.id, label: a.bank?.name ?? '' }))}
           />
         </div>
 
@@ -137,7 +139,7 @@ export function TaxesModal({ isOpen, onClose, process, onSave }: TaxesModalProps
           </label>
           
           <div className="grid grid-cols-1 gap-2 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar">
-            {services?.map((s: any) => {
+            {services?.map((s) => {
               const isSelected = formData.services?.includes(s.id);
               console.log('isSelected', isSelected);
               return (

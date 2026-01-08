@@ -1,4 +1,4 @@
-import { fetchTransactionMovimentsAction } from '@/models/bank/bank.service';
+import { fetchTransactionMovimentsAction } from '@/domain/services/bank/bank.service';
 import { create } from 'zustand';
 
 interface TransactionDataState {

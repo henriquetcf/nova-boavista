@@ -15,16 +15,16 @@ import { Button } from '../Button';
 import { motion } from 'framer-motion';
 import { DrawerWrapper } from '@/components/drawer/DrawerWrapper';
 import { ProcessTimeline } from './ProcessTimeline';
+import { ProcessEntity } from '@/domain/entities/process.entity';
+import { Status } from '@prisma/client';
 
-interface TimelineEvent {
-  label: string;
-  date?: Date | string;
-  description?: string;
-  type: 'success' | 'warning' | 'info' | 'error';
-  isSystem?: boolean; // Diferencia se foi o sistema que calculou ou se é rastro de banco
+interface ProcessDrawerProps {
+  isOpen: boolean;
+  onClose: () => void;
+  process: ProcessEntity | null;
 }
 
-export default function ProcessDrawer({ isOpen, onClose, process }: { isOpen: boolean, onClose: () => void, process: any }) {
+export default function ProcessDrawer({ isOpen, onClose, process }: ProcessDrawerProps) {
   
   const [isFinanceModalOpen, setIsFinanceModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -32,7 +32,7 @@ export default function ProcessDrawer({ isOpen, onClose, process }: { isOpen: bo
 
   if (!isOpen || !process) return null;
 
-  const costsValue = process.services?.reduce((acc: number, service: any) => acc + Number(service.baseValue), 0);
+  const costsValue = process.services?.reduce((acc: number, service) => acc + Number(service.baseValue), 0);
   const hasTax = process.services?.map((s) => s.isPaid !== true).some((s) => s);
 
   return (
@@ -122,7 +122,7 @@ export default function ProcessDrawer({ isOpen, onClose, process }: { isOpen: bo
                 <span className="text-[8px] italic">* Itens marcados com (X) foram recebidos</span>
               </p>
               <div className="grid grid-cols-2 gap-x-12 gap-y-3">
-                {process.documents?.map((doc: any) => (
+                {process.documents?.map((doc) => (
                   <div key={doc.id} className="flex items-center gap-3 text-[12px] border-b border-gray-200 pb-1">
                     <div className="w-5 h-5 border-2 border-black flex items-center justify-center text-[12px] font-black shrink-0">
                         {doc.isUploaded ? "X" : ""}
@@ -215,7 +215,7 @@ export default function ProcessDrawer({ isOpen, onClose, process }: { isOpen: bo
             <div className="text-right z-10">
               <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Status Atual</span>
               <span className={`px-4 py-2 rounded-xl text-xs font-black uppercase border shadow-sm ${
-                process.status === 'FINALIZADO' 
+                process.status === Status.CONCLUIDO 
                 ? 'bg-emerald-50 text-emerald-600 border-emerald-100' 
                 : 'bg-amber-50 text-amber-600 border-amber-100'
               }`}>
@@ -238,7 +238,7 @@ export default function ProcessDrawer({ isOpen, onClose, process }: { isOpen: bo
                 <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center">
                   <div>
                     <p className="text-[9px] font-bold text-gray-400 uppercase">Documento</p>
-                    <p className="text-xs font-bold dark:text-gray-300">{process.client?.document || process.client.cpf || process.client?.cnpj || 'N/A'}</p>
+                    <p className="text-xs font-bold dark:text-gray-300">{process.client?.document || 'N/A'}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-[9px] font-bold text-gray-400 uppercase">ID Sistema</p>
@@ -279,13 +279,13 @@ export default function ProcessDrawer({ isOpen, onClose, process }: { isOpen: bo
                     <div className="h-1.5 w-full bg-gray-200 dark:bg-white/10 rounded-full overflow-hidden">
                       <motion.div 
                         initial={{ width: 0 }}
-                        animate={{ width: `${Math.min((process.paidValue / process.totalValue) * 100, 100)}%` }}
+                        animate={{ width: `${Math.min((Number(process.paidValue) / Number(process.totalValue)) * 100, 100)}%` }}
                         className="h-full bg-emerald-500 rounded-full"
                       />
                     </div>
                     <div className="flex justify-between text-[9px] font-black uppercase tracking-tighter">
                       <span className="text-gray-400 italic">Quitação</span>
-                      <span className="text-emerald-600">{Math.min(Math.round((process.paidValue / process.totalValue) * 100), 100)}%</span>
+                      <span className="text-emerald-600">{Math.min(Math.round((Number(process.paidValue) / Number(process.totalValue)) * 100), 100)}%</span>
                     </div>
                   </div>
 
@@ -346,7 +346,7 @@ export default function ProcessDrawer({ isOpen, onClose, process }: { isOpen: bo
               <Clock size={16} /> Histórico Recente
             </h4>
             {/* <ProcessTimeline events={events} /> */}
-            <ProcessTimeline limit={2} />
+            <ProcessTimeline limit={5} />
           </div>
 
           {/* SEÇÃO 4: DOCUMENTOS DO CHECKLIST */}
@@ -361,7 +361,7 @@ export default function ProcessDrawer({ isOpen, onClose, process }: { isOpen: bo
             </div>
             
             <div className="grid grid-cols-1 gap-2">
-              {process.documents?.map((doc: any) => (
+              {process.documents?.map((doc) => (
                 <div key={doc.id} className="group/doc flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-white/[0.02] border border-gray-100 dark:border-gray-800 hover:border-[#800020]/20 transition-all">
                   <div className="flex items-center gap-3">
                     <div className={doc.isUploaded ? 'text-emerald-500' : 'text-amber-500'}>

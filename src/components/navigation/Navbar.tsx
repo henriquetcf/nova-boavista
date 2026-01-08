@@ -1,12 +1,7 @@
-import { 
-  MagnifyingGlassIcon, 
-  BellIcon, 
-} from "@heroicons/react/24/outline";
 import { ThemeToggle } from "../theme/ThemeToggle";
 import { UserMenu } from "./navbar/UserMenu";
 import { auth } from "@/auth";
 import { NotificationMenu } from "./navbar/NotificationMenu";
-import { GlobalSearch } from "./GlobalSearch";
 import { NavbarSearch } from "./navbar/NavbarSearch";
 
 export default async function Navbar() {

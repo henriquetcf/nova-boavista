@@ -10,12 +10,12 @@ import {
 } from 'lucide-react';
 import { Button } from '../Button';
 import { DrawerWrapper } from '@/components/drawer/DrawerWrapper';
-import { Service } from '@prisma/client';
+import { ServiceEntity } from '@/domain/entities/service.entity';
 
 interface ServiceDetailsDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  service: Service | null;
+  service: ServiceEntity | null;
 }
 
 export function ServiceDetailsDrawer({ isOpen, onClose, service }: ServiceDetailsDrawerProps) {

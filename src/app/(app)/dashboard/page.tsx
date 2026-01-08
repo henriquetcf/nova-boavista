@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { 
   Globe, TrendingUp, Users, Briefcase, 
   CheckCircle2, Plus, Target, 
@@ -290,7 +290,7 @@ export default function DashboardHome() {
         ) : (
           <ProcessDetailView 
             entity={selectedEntity}
-            type={selectedEntity?.type || 'PROCESS'}
+            type={'PROCESS'}
             onBack={() => selectEntity(null, 'CLIENT')} 
           />
         )

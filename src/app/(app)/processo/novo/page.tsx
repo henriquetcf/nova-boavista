@@ -33,7 +33,7 @@ export default function NewProcessPage() {
   const handleAddService = (serviceId: string) => {
     if (!serviceId) return;
 
-    const service = services.find(s => s.id === serviceId);
+    const service = services?.find(s => s.id === serviceId);
     if (service) {
       addService(service);
 
@@ -158,7 +158,7 @@ export default function NewProcessPage() {
               <SearchableSelect 
                 label="Adicionar Serviço"
                 placeholder="Busque um serviço para adicionar à lista..."
-                options={services.map((svc) => ({ label: svc.name, value: svc.id }))}
+                options={services?.map((svc) => ({ label: svc.name, value: svc.id })) ?? []}
                 value="" // Sempre vazio para permitir múltiplas adições
                 onChange={handleAddService}
                 error={Array.isArray(errors.services  ) ? errors.services[0] : errors.services}
@@ -235,7 +235,7 @@ export default function NewProcessPage() {
                   <span className="text-sm font-bold dark:text-white truncate">
                     {selectedClient ? selectedClient.name : 'Não selecionado'}
                   </span>
-                  {selectedClient && <span className="text-xs text-gray-500">{selectedClient.cpf || selectedClient.cnpj}</span>}
+                  {selectedClient && <span className="text-xs text-gray-500">{selectedClient.document}</span>}
                 </div>
                 
                 <div className="flex flex-col">
@@ -270,7 +270,7 @@ export default function NewProcessPage() {
 
               <Button 
                 type="submit"
-                isLoading={isLoading}
+                isLoading={isPending || isLoading}
                 className="w-full mt-8 py-7 shadow-xl shadow-[#800020]/20"
               >
                 Finalizar Cadastro

@@ -1,4 +1,4 @@
-import { depositAction, processPaymentAction, processTaxPaymentAction, transferAction } from '@/models/bank/bank.service';
+import { depositAction, processPaymentAction, processTaxPaymentAction, transferAction } from '@/domain/services/bank/bank.service';
 import { create } from 'zustand';
 
 interface TransactionFormData {

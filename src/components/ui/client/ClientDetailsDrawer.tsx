@@ -1,19 +1,19 @@
 'use client'
 import React from 'react';
 import { 
-  Phone, MapPin, Calendar, Briefcase, 
+  Phone, MapPin, 
   Edit3, Fingerprint, ShieldCheck, 
-  ArrowUpRight, Globe, UserCheck,
-  Hash,
+  ArrowUpRight, UserCheck,
   Copy
 } from 'lucide-react';
 import { Button } from '../Button';
 import { DrawerWrapper } from '@/components/drawer/DrawerWrapper';
+import { ClientEntity } from '@/domain/entities/client.entity';
 
 interface ClientDetailsDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  client: any;
+  client: ClientEntity | null;
 }
 
 export function ClientDetailsDrawer({ isOpen, onClose, client }: ClientDetailsDrawerProps) {
@@ -87,14 +87,14 @@ export function ClientDetailsDrawer({ isOpen, onClose, client }: ClientDetailsDr
               
               {/* Badge de Status Dinâmico */}
               <div className={`px-4 py-1.5 rounded-full border shadow-sm transition-all duration-500 ${
-                client.active !== false 
+                client.createdAt 
                 ? 'bg-green-50 dark:bg-green-500/5 border-green-100 dark:border-green-500/20' 
                 : 'bg-red-50 dark:bg-red-500/5 border-red-100 dark:border-red-500/20'
               }`}>
                   <div className="flex items-center gap-2">
-                    <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${client.active !== false ? 'bg-green-500' : 'bg-red-500'}`} />
-                    <p className={`text-[9px] font-black uppercase tracking-tighter ${client.active !== false ? 'text-green-600' : 'text-red-600'}`}>
-                        {client.active !== false ? 'Cadastro Ativo' : 'Cadastro Inativo'}
+                    <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${client.createdAt ? 'bg-green-500' : 'bg-red-500'}`} />
+                    <p className={`text-[9px] font-black uppercase tracking-tighter ${client.createdAt ? 'text-green-600' : 'text-red-600'}`}>
+                        {client.createdAt ? 'Cadastro Ativo' : 'Cadastro Inativo'}
                     </p>
                   </div>
               </div>
@@ -109,7 +109,7 @@ export function ClientDetailsDrawer({ isOpen, onClose, client }: ClientDetailsDr
               
               <div className="flex items-center justify-between group/id mt-1">
                 <p className="text-3xl font-black tracking-widest text-gray-800 dark:text-white italic font-mono uppercase bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 dark:from-white dark:via-gray-300 dark:to-white bg-clip-text">
-                  {client.cpf || client.cnpj || '000.000.000-00'}
+                  {client.document || '000.000.000-00'}
                 </p>
                 <button className="p-2 hover:bg-[#d4af37]/10 rounded-xl transition-all active:scale-90 group-hover/id:translate-x-1">
                   <Copy size={16} className="text-[#d4af37]" />

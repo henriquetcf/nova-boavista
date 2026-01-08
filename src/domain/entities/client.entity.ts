@@ -6,8 +6,8 @@ import { TransactionMovementEntity } from './transaction-movement.entity';
 export class ClientEntity extends BaseEntity<ClientEntity> {
   id: string = "";
   name: string = "";
-  cpf: string | null = null;
-  cnpj: string | null = null;
+  document: string = "";
+  email: string = "";
   rg: string | null = null;
   phone: string | null = null;
   address: string | null = null;

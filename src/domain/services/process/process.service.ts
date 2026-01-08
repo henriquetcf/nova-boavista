@@ -167,7 +167,7 @@ export async function updateProcessStatusAction(
   }
 }
 
-export async function fetchProcessesAction(id?: number) {
+export async function fetchProcessesAction(id?: string) {
   try {
     const result = await prisma.process.findMany({ 
       include: { 
@@ -178,9 +178,9 @@ export async function fetchProcessesAction(id?: number) {
       } 
     });
 
-    const process = EntityMapper.deserialize(ProcessEntity, result);
-    console.log('process', process);
-    return { success: true, process };
+    const processes = EntityMapper.deserializeList(ProcessEntity, result);
+    console.log('process', processes);
+    return { success: true, processes };
   } catch (error) {
     console.error("[PROCESS SERVICE] Erro ao buscar processo:", error);
     return { success: false, message: "Erro ao buscar processo." };

@@ -1,4 +1,6 @@
 "use server"
+import { ServiceEntity } from "@/domain/entities/service.entity";
+import { EntityMapper } from "@/domain/infra/mappers/entity-mapper";
 import { prisma } from "@/lib/prisma/prisma";
 import { ServiceInput, ServiceSchema } from "@/models/services/services.model";
 import { revalidatePath } from "next/cache";
@@ -55,7 +57,8 @@ export async function createServiceAction(rawInput: ServiceInput) {
 
 export async function fetchServicesAction() {
   try {
-    const services = await prisma.service.findMany({});
+    const result = await prisma.service.findMany();
+    const services = EntityMapper.deserializeList(ServiceEntity, result);
     return { success: true, services };
   } catch (error) {
     console.error("Erro ao buscar serviços:", error);
@@ -66,13 +69,14 @@ export async function fetchServicesAction() {
 export async function searchServicesAction(query: string) {
   try {
     // if (!query) return [];
-    const services = await prisma.service.findMany({
+    const result = await prisma.service.findMany({
       where: {
         name: { contains: query, mode: 'insensitive' }
       },
       take: 10, // Retorna só os 10 melhores resultados
       // select: { id: true, name: true }
     });
+    const services = EntityMapper.deserializeList(ServiceEntity, result);
     console.log('services', services);
     // return clients;
     return { success: true, services };

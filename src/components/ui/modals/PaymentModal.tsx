@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { CreditCard, Landmark, Banknote, Save } from 'lucide-react';
 import { FormField } from '../FormField';
 import { Button } from '../Button';
@@ -8,11 +8,12 @@ import { formatUtils } from '@/lib/formatUtils';
 import { useTransactionStore } from '@/store/transaction/transaction_store';
 import { useBankDataStore } from '@/store/bankAccount/bank_account_store';
 import { SearchableSelect } from '../SearchableSelect';
+import { ProcessEntity } from '@/domain/entities/process.entity';
 
 interface PaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  process: any;
+  process: ProcessEntity | null;
   onSave: (data: any) => void;
 }
 
@@ -36,6 +37,7 @@ export function PaymentModal({ isOpen, onClose, process, onSave }: PaymentModalP
   }, []);
 
   if (!process) return null;
+  if (isLoading) return <div>Loading...</div>;
 
   const handleClose = () => {
     reset();
@@ -124,7 +126,7 @@ export function PaymentModal({ isOpen, onClose, process, onSave }: PaymentModalP
           <SearchableSelect 
             value={formData.destinationAccountId} 
             onChange={(e) => setField('destinationAccountId', e)}
-            options={accounts.map(b => ({ label: b.bank.name, value: b.id }))}
+            options={accounts?.map(b => ({ label: b.bank?.name ?? '', value: b.id }))}
           />
         </div>
 

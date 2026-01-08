@@ -14,7 +14,7 @@ export class ServiceEntity extends BaseEntity<ServiceEntity> {
   @Type(() => String)
   profit: string = "0";
 
-  requiredDocuments: string | null = null;
+  requiredDocuments?: string;
   
   // O constructor aqui é herdado da BaseEntity automaticamente!
 }

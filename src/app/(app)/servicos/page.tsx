@@ -7,20 +7,20 @@ import { Filters } from "@/components/ui/Filters";
 import { Pagination } from "@/components/navigation/Pagination";
 import { useLoading } from "@/components/AppLoading";
 import { ServiceDetailsDrawer } from "@/components/ui/service/ServiceDetailsDrawer";
-import { Service } from "@prisma/client";
+import { ServiceEntity } from "@/domain/entities/service.entity";
 
 export default function ServiceList() {
   const { services, isLoading, fetchServices, removeService, searchQuery, setSearchQuery, statusFilter, setStatusFilter, currentPage, itemsPerPage, setCurrentPage } = useServiceDataStore();
   const { startLoading, stopLoading } = useLoading();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [selectedService, setSelectedService] = useState<ServiceEntity | null>(null);
   useEffect(() => {
     startLoading("Sincronizando serviços...");
     fetchServices().finally(() => stopLoading());
   }, []);
 
   // --- Lógica de Filtragem ---
-  const filteredData = services.filter(item => {
+  const filteredData = services?.filter(item => {
     const matchesSearch = 
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) 
       // ||
@@ -34,9 +34,9 @@ export default function ServiceList() {
   });
 
   // --- Lógica de Paginação ---
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredData?.length || 1 / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedData = filteredData.slice(startIndex, startIndex + itemsPerPage);
+  const paginatedData = filteredData?.slice(startIndex, startIndex + itemsPerPage);
 
   if (isLoading) return <div className="h-screen" />;
 
@@ -46,7 +46,7 @@ export default function ServiceList() {
       {/* Header da Seção */}
       <ListHeader 
         title="Serviços" 
-        count={services.length} 
+        count={services?.length} 
         buttonLabel="Novo Serviço" 
         buttonHref="/servicos/novo" 
       />
@@ -60,7 +60,7 @@ export default function ServiceList() {
       />
 
       <div className="grid grid-cols-1 gap-3">
-        {paginatedData.map((service) => {
+        {paginatedData?.map((service) => {
           const docsArray = service.requiredDocuments?.split(',').filter(Boolean) || [];
           
           return (
@@ -144,7 +144,7 @@ export default function ServiceList() {
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={setCurrentPage}
-          totalItems={filteredData.length} // Passa o total de processos filtrados
+          totalItems={filteredData?.length ?? 0} // Passa o total de processos filtrados
           itemsPerPage={itemsPerPage}     // Passa o limite da store (ex: 8)
         />
       )}

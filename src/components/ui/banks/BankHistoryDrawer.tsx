@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect } from 'react';
-import { X, ArrowUpCircle, ArrowDownCircle, ArrowRightLeft, CreditCard, Landmark, File } from 'lucide-react';
+import { ArrowUpCircle, ArrowDownCircle, ArrowRightLeft, Landmark, File } from 'lucide-react';
 import { useTransactionDataStore } from '@/store/transactionMoviment/transaction_moviment_store';
 import { DrawerWrapper } from '@/components/drawer/DrawerWrapper';
 import { Button } from '../Button';

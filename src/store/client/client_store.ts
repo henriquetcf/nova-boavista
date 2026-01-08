@@ -1,17 +1,9 @@
+import { ClientEntity } from "@/domain/entities/client.entity";
 import { fetchClientsAction, searchClientsAction } from "@/domain/services/client/client.service";
 import { create } from "zustand";
 
-interface Client {
-  id: string;
-  name: string;
-  cpf?: string | null;
-  cnpj?: string | null;
-  phone?: string | null;
-  // email: string;
-}
-
 interface ClientDataState {
-  clients: Client[];
+  clients: ClientEntity[];
   isLoading: boolean;
   
   // Filtros
@@ -29,7 +21,7 @@ interface ClientDataState {
   fetchClients: () => Promise<void>;
   fetchClientForSelect: () => Promise<void>;
   // Getter filtrado
-  filteredClients: () => Client[];
+  filteredClients: () => ClientEntity[];
 
   addClient: (client: { value: string, label: string }) => void;
   // removeClient: (id: string) => void;
@@ -57,7 +49,7 @@ export const useClientDataStore = create<ClientDataState>((set, get) => ({
       console.error("[CLIENT STORE] Erro ao buscar clientes:", result.message);
       return;
     }
-    set({ clients: result.clients as Client[] });
+    set({ clients: result.clients });
     set({ isLoading: false });
   },
 
@@ -69,15 +61,15 @@ export const useClientDataStore = create<ClientDataState>((set, get) => ({
       console.error("[CLIENT STORE] Erro ao buscar clientes:", result.message);
       return;
     }
-    set({ clients: result.clients as Client[] });
+    set({ clients: result.clients });
     set({ isLoading: false });
   },
 
   filteredClients: () => {
     const { clients, searchQuery } = get();
     return clients.filter(c => 
-      c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.cpf != null ? c.cpf?.includes(searchQuery) : c.cnpj?.includes(searchQuery)
+      c.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      c.document?.includes(searchQuery)
     );
   },
 
@@ -90,7 +82,7 @@ export const useClientDataStore = create<ClientDataState>((set, get) => ({
 
     // 3. Se não existe, adiciona no topo
     return {
-      clients: [{ id: client.value, name: client.label }, ...state.clients]
+      clients: [new ClientEntity({ id: client.value, name: client.label }), ...state.clients]
     };
   }),
 }));

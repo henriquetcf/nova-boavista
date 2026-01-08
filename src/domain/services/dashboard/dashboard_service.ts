@@ -144,7 +144,7 @@ export async function searchGlobalAction(query: string) {
       take: 5 // Limita para não sobrecarregar o dropdown
     });
 
-    const processes = EntityMapper.deserialize(ProcessEntity, results);
+    const processes = EntityMapper.deserializeList(ProcessEntity, results);
 
     return processes;
   } catch (error) {

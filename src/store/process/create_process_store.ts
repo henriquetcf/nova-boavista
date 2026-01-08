@@ -1,42 +1,24 @@
-import { ProcessSchema } from '@/models/process/process.model';
 import { createProcessAction } from '@/domain/services/process/process.service';
+import { ProcessInput, ProcessSchema, ServiceItemInput } from '@/models/process/process.model';
 import { create } from 'zustand';
 
-interface Service {
-  id: string;
-  name: string;
-  baseValue: string;
-  finalValue: string;
-  notes?: string;
-  requiredDocuments?: string;
-}
-
-interface ProcessFormData {
-  plate: string;
-  renavam: string;
-  clientId: string;
-  clientName: string; // Guardamos o nome para denormalização
-  services: Service[]; // Array de objetos de serviço
-  totalValue: string;
-}
-
 interface ProcessStore {
-  formData: ProcessFormData;
+  formData: ProcessInput;
   isLoading: boolean;
-  errors: Record<string, string[] | undefined>;
+  errors: Record<string, string | undefined>;
   
   // Ações básicas
-  setField: (field: keyof ProcessFormData, value: string) => void;
-  setErrors: (errors: Record<string, string[] | undefined>) => void;
+  setField: (field: keyof ProcessInput, value: string) => void;
+  setErrors: (errors: Record<string, string | undefined>) => void;
   setLoading: (loading: boolean) => void;
   reset: () => void;
 
   // Lógica de Serviços (Handled by Store)
-  addService: (service: Service) => void;
+  addService: (service: ServiceItemInput) => void;
   removeService: (serviceId: string) => void;
 
   create: () => Promise<{ success?: boolean; error?: string }>;
-  validate: (data: any, schema: any) => boolean;
+  validate: (data: ProcessInput, schema: typeof ProcessSchema) => boolean;
   updateServicePrice: (serviceId: string, newPrice: string) => void
 }
 
@@ -78,7 +60,7 @@ export const useProcessStore = create<ProcessStore>((set, get) => ({
 
     if (!result.success) {
       console.log('[CREATE PROCESS STORE] CREATE ERROR', result);
-      set({ errors: {'error': [result.message]}, isLoading: false });
+      set({ errors: {['error']: result.message}, isLoading: false });
       // set({ isLoading: false });
       return false;
       // return { error: result.error };
@@ -149,7 +131,7 @@ export const useProcessStore = create<ProcessStore>((set, get) => ({
         const fieldName = String(issue.path[0]);
         fieldErrors[fieldName] = issue.message;
       });
-      set({ errors: fieldErrors as any, isLoading: false });
+      set({ errors: fieldErrors, isLoading: false });
       return false;
     }
 

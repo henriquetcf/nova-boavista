@@ -2,24 +2,29 @@
 import { ClientEntity } from "@/domain/entities/client.entity";
 import { EntityMapper } from "@/domain/infra/mappers/entity-mapper";
 import { prisma } from "@/lib/prisma/prisma";
+import { ClientInput } from "@/models/client/client.model";
 import { revalidatePath } from "next/cache";
 
-export async function createClientAction(data: { name: string; document: string; phone: string }) {
+export async function createClientAction(data: ClientInput) {
   try {
     const cleanedDocument = data.document.replace(/\D/g, ""); // Limpa CPF/CNPJ
     const client = await prisma.client.create({
       data: {
         name: data.name,
-        cpf: cleanedDocument.length === 11 ? cleanedDocument : null,
-        cnpj: cleanedDocument.length === 14 ? cleanedDocument : null,
+        document: cleanedDocument,
+        email: data.email,
+        address: data.address,
         // document: data.document.replace(/\D/g, ""), // Limpa CPF/CNPJ
-        phone: data.phone.replace(/\D/g, ""),       // Limpa Telefone
+        phone: data.phone?.replace(/\D/g, ""),       // Limpa Telefone
       }
     });
 
+    const serializedClient = EntityMapper.deserialize(ClientEntity, client);
+    console.log('client', serializedClient);
+
     revalidatePath("/clientes");
     revalidatePath("processo/novo");
-    return { success: true, client };
+    return { success: true, client: serializedClient };
   } catch (error) {
     console.error("[CLIENT SERVICE] Erro ao cadastrar cliente:", error);
     return { success: false, message: "Erro ao cadastrar cliente." };
@@ -31,7 +36,7 @@ export async function fetchClientsAction(query?: string) {
     // if (!query) return [];
     const results = await prisma.client.findMany();
 
-    const clients = EntityMapper.deserialize(ClientEntity, results);
+    const clients = EntityMapper.deserializeList(ClientEntity, results);
     console.log('clientes', clients);
     // return clients;
     return { success: true, clients };
@@ -55,7 +60,7 @@ export async function searchClientsAction(query: string) {
       // select: { id: true, name: true }
     });
 
-    const clients = EntityMapper.deserialize(ClientEntity, results);
+    const clients = EntityMapper.deserializeList(ClientEntity, results);
     console.log('clientes', clients);
     // return clients;
     return { success: true, clients };
