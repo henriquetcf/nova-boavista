@@ -1,41 +1,19 @@
 // store/useProcessDetailStore.ts
 import { create } from 'zustand';
 import { Status } from '@prisma/client';
-import { ProcessSchema } from '@/models/process/process.model'; // Reaproveitando o schema se for igual
+import { ProcessInput, ProcessSchema } from '@/models/process/process.model'; // Reaproveitando o schema se for igual
 import { toast } from 'sonner';
-import { updateProcessStatusAction } from '@/services/process/process.service';
-
-interface Service {
-  id: string;
-  name: string;
-  baseValue: string;
-  finalValue: string;
-  type?: string; // Adicionado para a lógica das taxas
-  isPaid?: boolean;
-}
-
-interface ProcessFormData {
-  id?: string;
-  plate: string;
-  renavam?: string | null;
-  clientId: string;
-  clientName: string;
-  services?: Service[];
-  totalValue: string;
-  status: Status;
-  documents?: { id: string; name: string; isUploaded: boolean; fileUrl?: string; uploadedAt?: Date }[];
-  movements?: { id: string; status: Status; description?: string; createdAt: Date }[];
-  createdAt?: Date;
-}
+import { updateProcessStatusAction } from '@/domain/services/process/process.service';
+import { ProcessEntity } from '@/domain/entities/process.entity';
 
 interface ProcessDetailStore {
-  formData: ProcessFormData;
+  formData: ProcessEntity;
   isLoading: boolean;
   errors: Record<string, string[] | string | undefined>;
   
   // Ações de Estado
-  setField: (field: keyof ProcessFormData, value: any) => void;
-  setFormData: (data: ProcessFormData) => void;
+  setField: (field: keyof ProcessInput, value: string) => void;
+  setFormData: (data: ProcessEntity) => void;
   setErrors: (errors: Record<string, string[] | undefined>) => void;
   setLoading: (loading: boolean) => void;
   reset: () => void;
@@ -45,27 +23,20 @@ interface ProcessDetailStore {
   updateStatus: (newStatus: Status, description?: string) => Promise<{ success?: boolean; error?: string }>;
   
   // Helpers
-  validate: (data: any, schema: any) => boolean;
+  validate: (data: ProcessEntity, schema: typeof ProcessSchema) => boolean;
 }
 
 export const useUpdateProcessStore = create<ProcessDetailStore>((set, get) => ({
-  formData: {
-    plate: '',
-    renavam: '',
-    clientId: '',
-    clientName: '',
-    services: [],
-    totalValue: '0.00',
-  },
+  formData: new ProcessEntity(),
   errors: {},
   isLoading: false,
 
   // Inicializa ou atualiza os dados do formulário quando abre o detalhe
-  setFormData: (data) => set({ formData: data, errors: {} }),
+  setFormData: (data) => set({ formData: new ProcessEntity(data), errors: {} }),
 
   setField: (field, value) => 
     set((state) => ({ 
-      formData: { ...state.formData, [field]: value },
+      formData: new ProcessEntity({ ...state.formData, [field]: value }),
       errors: { ...state.errors, [field]: undefined } 
     })),
 
@@ -78,13 +49,6 @@ export const useUpdateProcessStore = create<ProcessDetailStore>((set, get) => ({
     set({ isLoading: true, errors: {} });
 
     if (!validate(formData, ProcessSchema)) return { error: 'Campos inválidos' };
-
-    // const result = await updateProcessAction(formData.id!, formData);
-
-    // if (!result.success) {
-    //   set({ errors: result.errors || {}, isLoading: false });
-    //   return { error: result.error };
-    // }
 
     set({ isLoading: false });
     toast.success("Dados salvos com sucesso!");
@@ -108,7 +72,7 @@ export const useUpdateProcessStore = create<ProcessDetailStore>((set, get) => ({
 
     // Atualiza o status localmente para a UI refletir na hora
     set((state) => ({
-      formData: { ...state.formData, status: newStatus },
+      formData: new ProcessEntity({ ...state.formData, status: newStatus }),
       isLoading: false
     }));
 
@@ -131,7 +95,7 @@ export const useUpdateProcessStore = create<ProcessDetailStore>((set, get) => ({
   },
 
   reset: () => set({ 
-    formData: { plate: '', renavam: '', clientId: '', clientName: '', services: [], totalValue: '0.00' }, 
+    formData: new ProcessEntity(), 
     errors: {},
     isLoading: false
   }),

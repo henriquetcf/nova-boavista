@@ -1,8 +1,14 @@
 'use client'
-import React, { useState } from 'react';
-import { X, Check, DollarSign, Wallet, CreditCard, Receipt } from 'lucide-react';
+import { ProcessEntity } from '@/domain/entities/process.entity';
+import { X, Wallet, CreditCard, Receipt } from 'lucide-react';
 
-export function FinanceModal({ isOpen, onClose, process }: { isOpen: boolean, onClose: () => void, process: any }) {
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  process: ProcessEntity | null;
+}
+
+export function FinanceModal({ isOpen, onClose, process }: ModalProps) {
   if (!isOpen) return null;
 
   return (
@@ -21,7 +27,7 @@ export function FinanceModal({ isOpen, onClose, process }: { isOpen: boolean, on
             </div>
             <div>
               <h3 className="text-lg font-black text-gray-800 dark:text-white uppercase tracking-tighter">Financeiro</h3>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Placa: {process.plate}</p>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Placa: {process?.plate}</p>
             </div>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-full text-gray-400 transition-colors">
@@ -39,7 +45,7 @@ export function FinanceModal({ isOpen, onClose, process }: { isOpen: boolean, on
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-black text-sm">R$</span>
               <input 
                 type="number" 
-                defaultValue={process.amountPaid}
+                defaultValue={process?.paidValue.toString() || 0}
                 className="w-full pl-12 pr-4 py-4 bg-gray-50 dark:bg-white/[0.03] border-2 border-gray-100 dark:border-gray-800 rounded-2xl focus:border-[#800020] outline-none font-black text-lg transition-all"
                 placeholder="0,00"
               />
@@ -52,7 +58,7 @@ export function FinanceModal({ isOpen, onClose, process }: { isOpen: boolean, on
               <Receipt size={14} /> Pagamento de Taxas (Custo)
             </label>
             <div className="space-y-2 max-h-[200px] overflow-y-auto pr-2 custom-scrollbar">
-              {process.services?.map((service: any) => (
+              {process?.services?.map((service) => (
                 <div 
                   key={service.id} 
                   className={`flex items-center justify-between p-4 rounded-2xl border-2 transition-all cursor-pointer ${

@@ -1,19 +1,20 @@
 "use client"
 import { useEffect, useState } from "react";
-import { User, Search, Edit3, Trash2, ChevronRight, Phone, Mail, Fingerprint } from "lucide-react";
+import { User, Edit3, Trash2, ChevronRight, Phone, Mail, Fingerprint } from "lucide-react";
 import { useClientDataStore } from "@/store/client/client_store";
 import { ListHeader } from "@/components/ui/header/ListHeader";
 import { Filters } from "@/components/ui/Filters";
 import { Pagination } from "@/components/navigation/Pagination";
 import { useLoading } from "@/components/AppLoading";
 import { ClientDetailsDrawer } from "@/components/ui/client/ClientDetailsDrawer";
+import { ClientEntity } from "@/domain/entities/client.entity";
 
 export default function ClientList() {
   const { clients, isLoading, fetchClients, searchQuery, statusFilter, currentPage, itemsPerPage, setSearchQuery, setStatusFilter, setCurrentPage } = useClientDataStore();
   const { startLoading, stopLoading } = useLoading();
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [selectedClient, setSelectedClient] = useState<ClientEntity | null>(null);
 
   useEffect(() => {
     startLoading("Sincronizando clientes...");
@@ -116,7 +117,8 @@ export default function ClientList() {
                 <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 dark:bg-[#222] rounded-full border border-gray-100 dark:border-gray-800 group-hover:bg-white dark:group-hover:bg-[#1a1a1a] transition-all">
                   <Mail size={12} className="text-[#800020]" />
                   <span className="text-[11px] font-semibold text-gray-500 lowercase truncate max-w-[180px]">
-                    {client.email || 'e-mail não cadastrado'}
+                    e-mail não cadastrado
+                    {/* {client?.email || 'e-mail não cadastrado'} */}
                   </span>
                 </div>
               </div>
@@ -127,7 +129,7 @@ export default function ClientList() {
                   <Edit3 size={18} />
                 </button>
                 <button 
-                  onClick={() => removeClient(client.id)}
+                  // onClick={() => removeClient(client.id)}
                   className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-all cursor-pointer active:scale-90"
                   title="Excluir Cliente"
                 >

@@ -1,4 +1,3 @@
-// components/process/ProcessTimeline.tsx
 'use client'
 import { CheckCircle2, Clock, AlertCircle, ChevronDown, ChevronUp, ArrowRight, FileText, DollarSign, Search, Clock10 } from 'lucide-react';
 import { useState, useMemo, useTransition } from 'react';
@@ -7,31 +6,7 @@ import { useUpdateProcessStore } from '@/store/process/update_process_store';
 import { Status } from '@prisma/client';
 import { useRouter } from 'next/navigation';
 
-// 1. Interfaces para Tipagem Estrita
-interface ProcessDocument {
-  isUploaded: boolean;
-}
-
-interface ProcessService {
-  type: 'TAXA' | 'HONORARIO'; // ajuste conforme seu DB
-  isPaid: boolean;
-}
-
-interface ProcessMovement {
-  id: string;
-  status: string;
-  description?: string;
-  createdAt: string | Date;
-}
-
 interface ProcessTimelineProps {
-  // process: {
-  //   id: string;
-  //   status: string;
-  //   documents?: ProcessDocument[];
-  //   services?: ProcessService[];
-  //   movements?: ProcessMovement[];
-  // };
   limit?: number;
 }
 

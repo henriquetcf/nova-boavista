@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useRef, useEffect, useMemo } from "react";
-import { ChevronDown, Check, Search } from "lucide-react";
+import { ChevronDown, Check } from "lucide-react";
 
 interface Option {
   label: string;

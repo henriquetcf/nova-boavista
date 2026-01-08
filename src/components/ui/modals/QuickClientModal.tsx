@@ -1,11 +1,11 @@
 'use client'
-import React, { useState } from "react";
+import { useState } from "react";
 import { UserPlus, ShieldCheck, Smartphone, Fingerprint, Save } from "lucide-react";
 import { FormField } from "../FormField";
 import { Button } from "../Button";
-import { createClientAction } from "@/services/client/client.service";
 import { ModalWrapper } from "./wrapper/ModalWrapper";
 import { formatUtils } from "@/lib/formatUtils";
+import { useCreateClientStore } from "@/store/client/create_client_store";
 
 interface QuickClientModalProps {
   isOpen: boolean;
@@ -15,10 +15,11 @@ interface QuickClientModalProps {
 
 export function QuickClientModal({ isOpen, onClose, onSuccess }: QuickClientModalProps) {
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({ name: '', document: '', phone: '' });
+  // const [formData, setFormData] = useState({ name: '', document: '', phone: '' });
+  const { formData, setField, create, reset } = useCreateClientStore();
 
   function handleClose() {
-    setFormData({ name: "", document: "", phone: "" });
+    reset();
     onClose();
   }
 
@@ -27,7 +28,8 @@ export function QuickClientModal({ isOpen, onClose, onSuccess }: QuickClientModa
     
     setLoading(true);
     try {
-      const result = await createClientAction(formData);
+      // const result = await createClientAction(formData);
+      const result = await create();
 
       if (result.success && result.client) {
         onSuccess({ 
@@ -37,7 +39,7 @@ export function QuickClientModal({ isOpen, onClose, onSuccess }: QuickClientModa
         
         onClose();
         onSuccess({ value: result.client.id, label: result.client.name });
-        setFormData({ name: "", document: "", phone: "" });
+        reset();
       }
     } catch (error) {
       console.error("Erro ao salvar:", error);
@@ -84,7 +86,7 @@ export function QuickClientModal({ isOpen, onClose, onSuccess }: QuickClientModa
           <FormField 
             placeholder="NOME COMPLETO OU RAZÃO SOCIAL"
             value={formData.name} 
-            onChange={e => setFormData({...formData, name: e.target.value.toUpperCase()})} 
+            onChange={e => setField('name', e.target.value.toUpperCase())} 
           />
         </div>
 
@@ -100,7 +102,7 @@ export function QuickClientModal({ isOpen, onClose, onSuccess }: QuickClientModa
               // onChange={e => setFormData({...formData, document: e.target.value})} 
               onChange={(e) => {
                 const formatted = e.target.value.length > 14 ? formatUtils.cnpj(e.target.value) : formatUtils.cpf(e.target.value);
-                setFormData({ ...formData, document: formatted });
+                setField('document', formatted);
               }}
             />
           </div>
@@ -112,11 +114,11 @@ export function QuickClientModal({ isOpen, onClose, onSuccess }: QuickClientModa
             </label>
             <FormField 
               placeholder="(00) 0 0000-0000"
-              value={formData.phone} 
+              value={formData.phone ?? ''} 
               // onChange={e => setFormData({...formData, phone: e.target.value})} 
               onChange={(e) => {
                 const formatted = formatUtils.phone(e.target.value);
-                setFormData({ ...formData, phone: formatted });
+                setField('phone', formatted);
               }}
             />
           </div>

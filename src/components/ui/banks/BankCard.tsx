@@ -4,17 +4,17 @@ import React, { useState } from 'react';
 import { Copy, Hash, Edit3, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 import * as SI from 'simple-icons';
-import { Bank } from '@prisma/client';
 import { BankHistoryDrawer } from './BankHistoryDrawer';
+import { BankEntity } from '@/domain/entities/bank.entity';
 
 interface BankCardProps {
   // bankName: "Nubank" | "Bradesco" | "Daycoval";
-  id: string;
-  cnpj: string;
-  agency: string;
-  account: string;
-  balance: string; // Adicionado
-  bank: Bank;
+  id?: string;
+  cnpj?: string;
+  agency?: string;
+  account?: string;
+  balance?: string; // Adicionado
+  bank?: BankEntity;
 }
 
 const bankConfigs = {
@@ -54,8 +54,9 @@ export const BankCard = ({ bank, cnpj, agency, account, balance = '1000' }: Bank
   const bankName = bank?.name as keyof typeof bankConfigs;
   const config = bankConfigs?.[bankName];
   
-  const copyToClipboard = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, text: string, label: string) => {
+  const copyToClipboard = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, label: string, text?: string,) => {
     e.stopPropagation();
+    if (!text) return;
     navigator.clipboard.writeText(text);
     toast.success(`${label} copiado!`);
   };
@@ -95,18 +96,18 @@ export const BankCard = ({ bank, cnpj, agency, account, balance = '1000' }: Bank
               </div>
               <div className="flex items-center justify-end gap-1.5 mt-1">
                 <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: config?.color }} />
-                <span className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">CÓD {bank.code}</span>
+                <span className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">CÓD {bank?.code}</span>
               </div>
             </div>
           </div>
 
           <div className="mt-2 grid grid-cols-2 gap-4">
-            <div onClick={(e) => copyToClipboard(e, agency, 'Agência')} className="cursor-pointer group/item">
+            <div onClick={(e) => copyToClipboard(e, 'Agência', agency)} className="cursor-pointer group/item">
               <p className="inline-flex text-[9px] font-black text-gray-400 uppercase mb-0.5 group-hover/item:text-gray-600 transition-colors mr-1">Agência</p>
               <Copy size={10} className="inline-flex text-gray-300 group-hover:text-gray-500 transition-colors" />
               <p className="text-xl font-black text-gray-700 dark:text-gray-200 tabular-nums tracking-tighter">{agency}</p>
             </div>
-            <div onClick={(e) => copyToClipboard(e, account, 'Conta')} className="cursor-pointer group/item text-right">
+            <div onClick={(e) => copyToClipboard(e, 'Conta', account)} className="cursor-pointer group/item text-right">
               <p className="inline-flex text-[9px] font-black text-gray-400 uppercase mb-0.5 group-hover/item:text-gray-600 transition-colors mr-1">Conta</p>
               <Copy size={10} className="inline-flex text-gray-300 group-hover:text-gray-500 transition-colors" />
               <p className="text-xl font-black text-gray-700 dark:text-gray-200 tabular-nums tracking-tighter">{account}</p>
@@ -124,14 +125,14 @@ export const BankCard = ({ bank, cnpj, agency, account, balance = '1000' }: Bank
             <span className="text-[12px] font-black text-gray-400 uppercase tracking-widest">Saldo em conta</span>
             <div className="flex items-center gap-1.5">
               <span className={`text-[19px] font-black tabular-nums ${showBalance ? 'text-emerald-500' : 'text-gray-300 dark:text-gray-700 blur-[3px]'}`}>
-                R$ {balance.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                R$ {balance.toLocaleString()}
               </span>
               {showBalance ? <EyeOff size={14} className="text-gray-400" /> : <Eye size={14} className="text-gray-400" />}
             </div>
           </div>
 
           <div 
-            onClick={(e) => copyToClipboard(e, cnpj, 'CNPJ')}
+            onClick={(e) => copyToClipboard(e, 'CNPJ', cnpj)}
             className="flex items-center justify-between p-3 mb-2 bg-gray-50 dark:bg-white/[0.03] rounded-xl cursor-pointer hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-all border border-gray-100 dark:border-white/5"
           >
             <div className="flex items-center gap-2">

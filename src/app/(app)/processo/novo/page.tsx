@@ -4,13 +4,11 @@ import { FormField } from "@/components/ui/FormField";
 import { SearchableSelect } from "@/components/ui/SearchableSelect";
 import { Button } from "@/components/ui/Button";
 import { QuickClientModal } from "@/components/ui/modals/QuickClientModal";
-import { Plus, Trash2, Car, User, ReceiptText, FileText } from "lucide-react";
+import { Plus, Trash2, User, ReceiptText, FileText } from "lucide-react";
 import { useProcessStore } from "@/store/process/create_process_store";
 import { useRouter } from "next/navigation";
 import { formatUtils } from "@/lib/formatUtils";
 import { PlatePreview } from "@/components/ui/PlatePreview";
-import { searchClientsAction } from "@/services/client/client.service";
-import { ProcessSchema } from "@/models/process/process.model";
 import { PageHeader } from "@/components/ui/header/PageHeader";
 import { useServiceDataStore } from "@/store/services/service_store";
 import { useClientDataStore } from "@/store/client/client_store";
@@ -35,7 +33,7 @@ export default function NewProcessPage() {
   const handleAddService = (serviceId: string) => {
     if (!serviceId) return;
 
-    const service = services.find(s => s.id === serviceId);
+    const service = services?.find(s => s.id === serviceId);
     if (service) {
       addService(service);
 
@@ -50,7 +48,7 @@ export default function NewProcessPage() {
   const [ isPending, startTransition ] = useTransition();
 
   const selectedClient = useMemo(() => 
-    clients?.filter(c => c.id === formData.clientId),
+    clients?.find(c => c.id === formData.clientId),
   [formData.clientId, clients]);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -160,7 +158,7 @@ export default function NewProcessPage() {
               <SearchableSelect 
                 label="Adicionar Serviço"
                 placeholder="Busque um serviço para adicionar à lista..."
-                options={services.map((svc) => ({ label: svc.name, value: svc.id }))}
+                options={services?.map((svc) => ({ label: svc.name, value: svc.id })) ?? []}
                 value="" // Sempre vazio para permitir múltiplas adições
                 onChange={handleAddService}
                 error={Array.isArray(errors.services  ) ? errors.services[0] : errors.services}
@@ -168,7 +166,7 @@ export default function NewProcessPage() {
 
               {/* Lista de serviços adicionados */}
               <div className="mt-4 space-y-2">
-                {formData.services.map((svc, index) => (
+                {formData.services.map((svc) => (
                   <div key={svc.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-[#222] rounded-xl border border-gray-100 dark:border-gray-800 transition-all hover:border-[#800020]/30">
                     <div className="flex-1 mr-4">
                       <p className="font-bold text-sm dark:text-white mb-1">{svc.name}</p>
@@ -237,7 +235,7 @@ export default function NewProcessPage() {
                   <span className="text-sm font-bold dark:text-white truncate">
                     {selectedClient ? selectedClient.name : 'Não selecionado'}
                   </span>
-                  {selectedClient && <span className="text-xs text-gray-500">{selectedClient.cpf || selectedClient.cnpj}</span>}
+                  {selectedClient && <span className="text-xs text-gray-500">{selectedClient.document}</span>}
                 </div>
                 
                 <div className="flex flex-col">
@@ -272,7 +270,7 @@ export default function NewProcessPage() {
 
               <Button 
                 type="submit"
-                isLoading={isLoading}
+                isLoading={isPending || isLoading}
                 className="w-full mt-8 py-7 shadow-xl shadow-[#800020]/20"
               >
                 Finalizar Cadastro

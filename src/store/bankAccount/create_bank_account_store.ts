@@ -1,4 +1,4 @@
-import { createBankAccountAction } from '@/models/bank/bank.service';
+import { createBankAccountAction } from '@/domain/services/bank/bank.service';
 import { BankAccountInput, BankAccountSchema } from '@/models/bankAccount/bank_account_model';
 import { create } from 'zustand';
 // import { createBankAccountAction } from '@/services/bank/bank.service';
@@ -8,7 +8,7 @@ interface CreateBankAccountStore {
   isLoading: boolean;
   errors: Record<string, string[] | undefined>;
 
-  setField: (field: keyof BankAccountInput, value: any) => void;
+  setField: (field: keyof BankAccountInput, value: string) => void;
   setErrors: (errors: Record<string, string[] | undefined>) => void;
   reset: () => void;
   create: () => Promise<{ success?: boolean; error?: string }>;
@@ -70,6 +70,7 @@ export const useCreateBankAccountStore = create<CreateBankAccountStore>((set, ge
       return { success: true, result };
     } catch (err) {
       set({ isLoading: false });
+      console.log('[CREATE BANK ACCOUNT STORE] CREATE ERROR', err);
       return { error: 'Erro ao conectar com o servidor' };
     }
   }

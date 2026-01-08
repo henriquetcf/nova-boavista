@@ -1,11 +1,9 @@
 'use client'
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { 
-  X, Info, User, Car, FileText, Calendar, 
-  DollarSign, Hash, CheckCircle2, AlertCircle,
+  User, FileText, 
+  DollarSign, CheckCircle2, AlertCircle,
   TrendingUp, ClipboardCheck, Clock, Printer, ArrowRight,
-  CreditCard,
-  Check,
   ReceiptText,
   Plus
 } from 'lucide-react';
@@ -17,53 +15,16 @@ import { Button } from '../Button';
 import { motion } from 'framer-motion';
 import { DrawerWrapper } from '@/components/drawer/DrawerWrapper';
 import { ProcessTimeline } from './ProcessTimeline';
+import { ProcessEntity } from '@/domain/entities/process.entity';
+import { Status } from '@prisma/client';
 
-interface TimelineEvent {
-  label: string;
-  date?: Date | string;
-  description?: string;
-  type: 'success' | 'warning' | 'info' | 'error';
-  isSystem?: boolean; // Diferencia se foi o sistema que calculou ou se é rastro de banco
+interface ProcessDrawerProps {
+  isOpen: boolean;
+  onClose: () => void;
+  process: ProcessEntity | null;
 }
 
-// export function ProcessTimeline({ events }: { events: TimelineEvent[] }) {
-//   const getColors = (type: string, isSystem?: boolean) => {
-//     if (isSystem) return 'border-gray-300 dark:border-gray-600 bg-transparent'; // Estilo mais sutil para sistema
-//     switch (type) {
-//       case 'success': return 'bg-emerald-500 border-emerald-200';
-//       case 'warning': return 'bg-amber-500 border-amber-200';
-//       case 'error': return 'bg-red-500 border-red-200';
-//       default: return 'bg-[#800020] border-[#800020]/20';
-//     }
-//   };
-
-//   return (
-//     <div className="relative space-y-6 before:absolute before:inset-0 before:ml-[7px] before:h-full before:w-[1px] before:bg-gray-100 dark:before:bg-white/5">
-//       {events.map((event, idx) => (
-//         <div key={idx} className="relative flex items-start gap-4 group animate-in fade-in slide-in-from-left-2 duration-300">
-//           <div className={`mt-1.5 h-3.5 w-3.5 rounded-full border-2 ${getColors(event.type, event.isSystem)} z-10 shadow-sm transition-transform group-hover:scale-125`} />
-//           <div className="flex flex-col">
-//             <p className={`text-[10px] font-black uppercase tracking-tight ${event.isSystem ? 'text-gray-400' : 'dark:text-gray-100 text-gray-800'}`}>
-//               {event.label}
-//             </p>
-//             {event.date && (
-//               <p className="text-[8px] text-gray-400 font-bold uppercase tabular-nums">
-//                 {new Date(event.date).toLocaleDateString('pt-BR')} - {new Date(event.date).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}
-//               </p>
-//             )}
-//             {event.description && (
-//               <p className="text-[10px] text-gray-500 dark:text-gray-400 font-medium italic mt-0.5 leading-relaxed">
-//                 {event.description}
-//               </p>
-//             )}
-//           </div>
-//         </div>
-//       ))}
-//     </div>
-//   );
-// }
-
-export default function ProcessDrawer({ isOpen, onClose, process }: { isOpen: boolean, onClose: () => void, process: any }) {
+export default function ProcessDrawer({ isOpen, onClose, process }: ProcessDrawerProps) {
   
   const [isFinanceModalOpen, setIsFinanceModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -71,116 +32,8 @@ export default function ProcessDrawer({ isOpen, onClose, process }: { isOpen: bo
 
   if (!isOpen || !process) return null;
 
-  const costsValue = process.services?.reduce((acc: number, service: any) => acc + Number(service.baseValue), 0);
+  const costsValue = process.services?.reduce((acc: number, service) => acc + Number(service.baseValue), 0);
   const hasTax = process.services?.map((s) => s.isPaid !== true).some((s) => s);
-
-  // Dentro do ProcessDrawer.tsx
-  const generateHistory = (process: any) => {
-    const history: any[] = [];
-
-    // 1. Sempre começa com a criação
-    history.push({
-      label: "Processo Aberto",
-      date: process.createdAt,
-      description: `Iniciado por ${process.user?.name || 'Sistema'}`,
-      type: 'success'
-    });
-
-    // 2. Verifica Documentos
-    const totalDocs = process.documents?.length || 0;
-    const uploadedDocs = process.documents?.filter((d: any) => d.isUploaded).length || 0;
-
-    if (uploadedDocs > 0 && uploadedDocs < totalDocs) {
-      history.push({
-        label: "Documentação Parcial",
-        description: `${uploadedDocs} de ${totalDocs} documentos entregues`,
-        type: 'warning'
-      });
-    } else if (uploadedDocs === totalDocs && totalDocs > 0) {
-      history.push({
-        label: "Checklist Concluído",
-        description: "Todos os documentos foram validados",
-        type: 'success'
-      });
-    } else {
-      history.push({
-        label: "Aguardando Documentos",
-        description: "Nenhum documento anexado até o momento",
-        type: 'info'
-      });
-    }
-
-    // 3. Status de Pagamento/Financeiro (Exemplo se totalValue > 0)
-    if (Number(process.totalValue) > 0) {
-      history.push({
-        label: "Financeiro Gerado",
-        description: `Valor total definido: R$ ${Number(process.totalValue).toFixed(2)}`,
-        type: 'info'
-      });
-    }
-
-    // 4. Status Final
-    if (process.status === 'FINALIZADO') {
-      history.push({
-        label: "Processo Finalizado",
-        date: process.updatedAt,
-        description: "Veículo regularizado com sucesso",
-        type: 'success'
-      });
-    }
-
-    return history.reverse(); // Para mostrar o mais recente no topo
-  };
-
-  const generateSmartHistory = (process: any) => {
-    const combinedHistory: any[] = [];
-
-    // 1. ADICIONA AS MOVIMENTAÇÕES REAIS DO BANCO
-    if (process.processMovements) {
-      process.processMovements.forEach((move: any) => {
-        combinedHistory.push({
-          label: move.status.replace('_', ' '),
-          date: move.createdAt,
-          description: move.description,
-          type: move.status === 'EM_EXIGENCIA' ? 'error' : (move.status === 'CONCLUIDO' ? 'success' : 'info'),
-          isSystem: false
-        });
-      });
-    }
-
-    // 2. ADICIONA OS "GATILHOS" DE SISTEMA (SÓ SE NÃO HOUVER MOVIMENTAÇÃO RECENTE DISSO)
-    // Documentos
-    const totalDocs = process.documents?.length || 0;
-    const uploadedDocs = process.documents?.filter((d: any) => d.isUploaded).length || 0;
-    if (totalDocs > 0 && uploadedDocs < totalDocs) {
-      combinedHistory.push({
-        label: "Checklist Pendente",
-        description: `Faltam ${totalDocs - uploadedDocs} documentos`,
-        type: 'warning',
-        isSystem: true
-      });
-    }
-
-    // Financeiro
-    if (process.paidValue < process.totalValue && process.paidValue > 0) {
-      combinedHistory.push({
-        label: "Pagamento Parcial",
-        description: `Saldo devedor: R$ ${(process.totalValue - process.paidValue).toFixed(2)}`,
-        type: 'warning',
-        isSystem: true
-      });
-    }
-
-    // 3. ORDENA POR DATA (MAIS RECENTE NO TOPO)
-    return combinedHistory.sort((a, b) => {
-      const dateA = a.date ? new Date(a.date).getTime() : 0;
-      const dateB = b.date ? new Date(b.date).getTime() : 0;
-      return dateB - dateA;
-    });
-  };
-
-  // No JSX do Drawer, você chama assim:
-  const events = generateSmartHistory(process);
 
   return (
     <>
@@ -269,7 +122,7 @@ export default function ProcessDrawer({ isOpen, onClose, process }: { isOpen: bo
                 <span className="text-[8px] italic">* Itens marcados com (X) foram recebidos</span>
               </p>
               <div className="grid grid-cols-2 gap-x-12 gap-y-3">
-                {process.documents?.map((doc: any) => (
+                {process.documents?.map((doc) => (
                   <div key={doc.id} className="flex items-center gap-3 text-[12px] border-b border-gray-200 pb-1">
                     <div className="w-5 h-5 border-2 border-black flex items-center justify-center text-[12px] font-black shrink-0">
                         {doc.isUploaded ? "X" : ""}
@@ -362,7 +215,7 @@ export default function ProcessDrawer({ isOpen, onClose, process }: { isOpen: bo
             <div className="text-right z-10">
               <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Status Atual</span>
               <span className={`px-4 py-2 rounded-xl text-xs font-black uppercase border shadow-sm ${
-                process.status === 'FINALIZADO' 
+                process.status === Status.CONCLUIDO 
                 ? 'bg-emerald-50 text-emerald-600 border-emerald-100' 
                 : 'bg-amber-50 text-amber-600 border-amber-100'
               }`}>
@@ -385,7 +238,7 @@ export default function ProcessDrawer({ isOpen, onClose, process }: { isOpen: bo
                 <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center">
                   <div>
                     <p className="text-[9px] font-bold text-gray-400 uppercase">Documento</p>
-                    <p className="text-xs font-bold dark:text-gray-300">{process.client?.document || process.client.cpf || process.client?.cnpj || 'N/A'}</p>
+                    <p className="text-xs font-bold dark:text-gray-300">{process.client?.document || 'N/A'}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-[9px] font-bold text-gray-400 uppercase">ID Sistema</p>
@@ -426,13 +279,13 @@ export default function ProcessDrawer({ isOpen, onClose, process }: { isOpen: bo
                     <div className="h-1.5 w-full bg-gray-200 dark:bg-white/10 rounded-full overflow-hidden">
                       <motion.div 
                         initial={{ width: 0 }}
-                        animate={{ width: `${Math.min((process.paidValue / process.totalValue) * 100, 100)}%` }}
+                        animate={{ width: `${Math.min((Number(process.paidValue) / Number(process.totalValue)) * 100, 100)}%` }}
                         className="h-full bg-emerald-500 rounded-full"
                       />
                     </div>
                     <div className="flex justify-between text-[9px] font-black uppercase tracking-tighter">
                       <span className="text-gray-400 italic">Quitação</span>
-                      <span className="text-emerald-600">{Math.min(Math.round((process.paidValue / process.totalValue) * 100), 100)}%</span>
+                      <span className="text-emerald-600">{Math.min(Math.round((Number(process.paidValue) / Number(process.totalValue)) * 100), 100)}%</span>
                     </div>
                   </div>
 
@@ -493,7 +346,7 @@ export default function ProcessDrawer({ isOpen, onClose, process }: { isOpen: bo
               <Clock size={16} /> Histórico Recente
             </h4>
             {/* <ProcessTimeline events={events} /> */}
-            <ProcessTimeline process={process} limit={2} />
+            <ProcessTimeline limit={5} />
           </div>
 
           {/* SEÇÃO 4: DOCUMENTOS DO CHECKLIST */}
@@ -508,7 +361,7 @@ export default function ProcessDrawer({ isOpen, onClose, process }: { isOpen: bo
             </div>
             
             <div className="grid grid-cols-1 gap-2">
-              {process.documents?.map((doc: any) => (
+              {process.documents?.map((doc) => (
                 <div key={doc.id} className="group/doc flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-white/[0.02] border border-gray-100 dark:border-gray-800 hover:border-[#800020]/20 transition-all">
                   <div className="flex items-center gap-3">
                     <div className={doc.isUploaded ? 'text-emerald-500' : 'text-amber-500'}>

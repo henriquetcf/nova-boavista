@@ -7,10 +7,6 @@ import {
   Calendar, 
   Car, 
   CheckCircle2, 
-  X,
-  FileText,
-  User,
-  Info,
   ReceiptText,
   Plus
 } from "lucide-react";
@@ -24,13 +20,15 @@ import { TaxesModal } from "@/components/ui/modals/TaxesModal";
 import { PaymentModal } from "@/components/ui/modals/PaymentModal";
 import { DeleteModal } from "@/components/ui/modals/DeleteModal";
 import { Status } from "@prisma/client";
+import { DocumentEntity } from "@/domain/entities/document.entity";
+import { ProcessEntity } from "@/domain/entities/process.entity";
 
 
 export default function ProcessList() {
   const { fetchProcesses, processes, isLoading, searchQuery, statusFilter, currentPage, itemsPerPage, setSearchQuery, setStatusFilter, setCurrentPage, toggleDocStatus } = useProcessDataStore();
   const { startLoading, stopLoading } = useLoading();
 
-  const [selectedProcess, setSelectedProcess] = useState<any | null>(null);
+  const [selectedProcess, setSelectedProcess] = useState<ProcessEntity | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [openChecklistId, setOpenChecklistId] = useState<string | null>(null);
 
@@ -71,21 +69,21 @@ export default function ProcessList() {
       <div className="grid grid-cols-1 gap-3 relative">
         {paginatedData?.map((process) => {
           // Mantendo sua lógica de documentos intacta
-          const rawDocs = process.documents?.flatMap((s: any) => s) || [];
-          const uniqueDocsMap = new Map();
-          rawDocs.forEach((doc: any) => {
+          const rawDocs = process.documents?.flatMap((s) => s) || [];
+          const uniqueDocsMap: Map<string, DocumentEntity> = new Map();
+          rawDocs.forEach((doc) => {
             const existing = uniqueDocsMap.get(doc.name);
             if (!existing || (!existing.isUploaded && doc.isUploaded)) uniqueDocsMap.set(doc.name, doc);
           });
           const uniqueDocs = Array.from(uniqueDocsMap.values());
-          const missingDocs = uniqueDocs.filter((d: any) => !d.isUploaded);
+          const missingDocs = uniqueDocs.filter((d) => !d.isUploaded);
           const progress = uniqueDocs.length > 0 ? ((uniqueDocs.length - missingDocs.length) / uniqueDocs.length) * 100 : 0;
-          const serviceNames = process.services?.map((s: any) => s.name).join(" + ") || process.serviceName;
+          const serviceNames = process.services?.map((s) => s.name).join(" + ");
 
           // Lógica Financeira do Card
           const pendingAmount = Number(process.totalValue) - Number(process.paidValue || 0);
-          const unpaidTaxesValue = process.services?.filter((s: any) => !s.isPaid)
-            .reduce((acc: number, s: any) => acc + Number(s.baseValue), 0) || 0;
+          const unpaidTaxesValue = process.services?.filter((s) => !s.isPaid)
+            .reduce((acc: number, s) => acc + Number(s.baseValue), 0) || 0;
 
           return (
             <div 
@@ -146,7 +144,7 @@ export default function ProcessList() {
                   </div>
 
                   <div className="flex gap-1">
-                    {uniqueDocs.map((doc: any, idx: number) => (
+                    {uniqueDocs.map((doc, idx: number) => (
                       <div key={idx} className="relative group/tip">
                         <div className={`w-1.5 h-1.5 rounded-full transition-all ${doc.isUploaded ? 'bg-emerald-500' : 'bg-gray-200 dark:bg-gray-700'}`} />
                         <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-[10px] font-bold rounded uppercase whitespace-nowrap opacity-0 group-hover/tip:opacity-100 pointer-events-none transition-opacity z-[100]">
@@ -163,7 +161,7 @@ export default function ProcessList() {
                       <div onClick={(e) => e.stopPropagation()} className="absolute top-[80%] left-6 w-60 bg-white dark:bg-[#1e1e1e] border border-gray-100 dark:border-gray-800 rounded-2xl shadow-2xl z-[70] p-4 animate-in fade-in zoom-in-95 duration-200">
                         <h4 className="text-[11px] font-black text-[#800020] uppercase mb-3 border-b pb-2">Documentos</h4>
                         <div className="space-y-1 max-h-40 overflow-y-auto custom-scrollbar">
-                          {uniqueDocs.map((doc: any) => (
+                          {uniqueDocs.map((doc) => (
                             <div 
                               key={doc.id} 
                               onClick={() => toggleDocStatus(process.id, doc.name)}

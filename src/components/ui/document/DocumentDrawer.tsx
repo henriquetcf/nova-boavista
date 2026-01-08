@@ -1,7 +1,13 @@
 "use client"
 import { X, Check } from "lucide-react";
 
-export function DocumentDrawer({ isOpen, onClose, processId }: { isOpen: boolean, onClose: () => void, processId: string | null }) {
+interface DocumentDrawerProps {
+  isOpen: boolean;
+  onClose: () => void;
+  processId: string | null;
+}
+
+export function DocumentDrawer({ isOpen, onClose, processId }: DocumentDrawerProps) {
   if (!isOpen) return null;
 
   return (

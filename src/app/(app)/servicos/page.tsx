@@ -7,20 +7,20 @@ import { Filters } from "@/components/ui/Filters";
 import { Pagination } from "@/components/navigation/Pagination";
 import { useLoading } from "@/components/AppLoading";
 import { ServiceDetailsDrawer } from "@/components/ui/service/ServiceDetailsDrawer";
-import { Service } from "@prisma/client";
+import { ServiceEntity } from "@/domain/entities/service.entity";
 
 export default function ServiceList() {
   const { services, isLoading, fetchServices, removeService, searchQuery, setSearchQuery, statusFilter, setStatusFilter, currentPage, itemsPerPage, setCurrentPage } = useServiceDataStore();
   const { startLoading, stopLoading } = useLoading();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [selectedService, setSelectedService] = useState<ServiceEntity | null>(null);
   useEffect(() => {
     startLoading("Sincronizando serviços...");
     fetchServices().finally(() => stopLoading());
   }, []);
 
   // --- Lógica de Filtragem ---
-  const filteredData = services.filter(item => {
+  const filteredData = services?.filter(item => {
     const matchesSearch = 
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) 
       // ||
@@ -34,9 +34,9 @@ export default function ServiceList() {
   });
 
   // --- Lógica de Paginação ---
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredData?.length || 1 / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedData = filteredData.slice(startIndex, startIndex + itemsPerPage);
+  const paginatedData = filteredData?.slice(startIndex, startIndex + itemsPerPage);
 
   if (isLoading) return <div className="h-screen" />;
 
@@ -46,21 +46,10 @@ export default function ServiceList() {
       {/* Header da Seção */}
       <ListHeader 
         title="Serviços" 
-        count={services.length} 
+        count={services?.length} 
         buttonLabel="Novo Serviço" 
         buttonHref="/servicos/novo" 
       />
-
-      {/* Search Bar Minimalista */}
-      {/* <div className="flex items-center justify-between mb-6">
-        <div className="relative w-full max-w-xs group">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#800020] transition-colors" size={16} />
-          <input 
-            placeholder="Filtrar serviços..."
-            className="w-full bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-800 p-2 pl-10 rounded-xl text-[13px] font-medium outline-none focus:border-[#800020]/50 focus:ring-4 focus:ring-[#800020]/5 transition-all"
-          />
-        </div>
-      </div> */}
 
       {/* Componente de Filtros plugado na Store */}
       <Filters 
@@ -71,7 +60,7 @@ export default function ServiceList() {
       />
 
       <div className="grid grid-cols-1 gap-3">
-        {paginatedData.map((service) => {
+        {paginatedData?.map((service) => {
           const docsArray = service.requiredDocuments?.split(',').filter(Boolean) || [];
           
           return (
@@ -100,7 +89,7 @@ export default function ServiceList() {
                       <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-50 dark:bg-emerald-500/5 border border-emerald-100 dark:border-emerald-500/20 rounded-md">
                         <Banknote size={12} className="text-emerald-600 dark:text-emerald-400" />
                         <span className="text-[12px] font-black text-emerald-700 dark:text-emerald-300 tabular-nums">
-                          R$ {service.finalValue?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                          R$ {service.finalValue?.toLocaleString()}
                         </span>
                       </div>
                       <span className="text-[11px] text-gray-300 font-bold ml-1 uppercase tracking-tighter">
@@ -155,7 +144,7 @@ export default function ServiceList() {
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={setCurrentPage}
-          totalItems={filteredData.length} // Passa o total de processos filtrados
+          totalItems={filteredData?.length ?? 0} // Passa o total de processos filtrados
           itemsPerPage={itemsPerPage}     // Passa o limite da store (ex: 8)
         />
       )}

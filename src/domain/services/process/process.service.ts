@@ -1,9 +1,11 @@
 "use server";
 
 import { auth } from "@/auth"; // Seu setup de Auth.js
+import { ProcessEntity } from "@/domain/entities/process.entity";
+import { EntityMapper } from "@/domain/infra/mappers/entity-mapper";
 import { prisma } from "@/lib/prisma/prisma";
-import { ProcessInput, ProcessSchema, ServiceItemInput } from "@/models/process/process.model";
-import { Status } from "@prisma/client";
+import { ProcessInput } from "@/models/process/process.model";
+import { Prisma, Status } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 export async function createProcessAction(rawData: ProcessInput) {
@@ -13,17 +15,18 @@ export async function createProcessAction(rawData: ProcessInput) {
     return { success: false, message: "Sessão expirada." };
   }
 
-  const validation = ProcessSchema.safeParse(rawData);
+  // const validation = ProcessSchema.safeParse(rawData);
 
-  if (!validation.success) {
-    return { 
-      success: false, 
-      message: "Dados inválidos", 
-      errors: validation.error.flatten().fieldErrors 
-    };
-  }
+  // if (!validation.success) {
+  //   return { 
+  //     success: false, 
+  //     message: "Dados inválidos", 
+  //     errors: validation.error.flatten().fieldErrors 
+  //   };
+  // }
 
-  const { plate, renavam, clientId, services, totalValue } = validation.data;
+  // const { plate, renavam, clientId, services, totalValue } = validation.data;
+  const { plate, renavam, clientId, services, totalValue } = rawData;
 
   try {
     // Cálculo do lucro
@@ -111,7 +114,7 @@ async function createProcessMovement(
   processId: string, 
   status: Status, 
   description?: string,
-  tx?: any // Transação opcional
+  tx?: Prisma.TransactionClient // Transação opcional
 ) {
   const db = tx || prisma; // Se não passar tx, usa o prisma normal
 
@@ -164,11 +167,20 @@ export async function updateProcessStatusAction(
   }
 }
 
-export async function fetchProcessesAction(id?: number) {
+export async function fetchProcessesAction(id?: string) {
   try {
-    const process = await prisma.process.findMany({ include: { services: true, documents: true, client: true, movements: true } });
-    console.log('process', process);
-    return { success: true, process };
+    const result = await prisma.process.findMany({ 
+      include: { 
+        services: true, 
+        documents: true, 
+        client: true, 
+        movements: true 
+      } 
+    });
+
+    const processes = EntityMapper.deserializeList(ProcessEntity, result);
+    console.log('process', processes);
+    return { success: true, processes };
   } catch (error) {
     console.error("[PROCESS SERVICE] Erro ao buscar processo:", error);
     return { success: false, message: "Erro ao buscar processo." };

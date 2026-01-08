@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect } from 'react';
-import { X, ArrowUpCircle, ArrowDownCircle, ArrowRightLeft, CreditCard, Landmark, File } from 'lucide-react';
+import { ArrowUpCircle, ArrowDownCircle, ArrowRightLeft, Landmark, File } from 'lucide-react';
 import { useTransactionDataStore } from '@/store/transactionMoviment/transaction_moviment_store';
 import { DrawerWrapper } from '@/components/drawer/DrawerWrapper';
 import { Button } from '../Button';
@@ -88,7 +88,8 @@ export const BankHistoryDrawer = ({ isOpen, onClose, accountId, bankName }: Bank
               <div key={m.id} className="relative group">
                 {/* Indicador de Status na Linha */}
                 <div className={`absolute -left-[31px] top-1 p-1 rounded-full bg-white dark:bg-[#0c0c0c] border-2 shadow-sm transition-transform group-hover:scale-110 ${isOut ? 'border-red-500/50 text-red-500' : 'border-emerald-500/50 text-emerald-500'}`}>
-                  {React.cloneElement(config.icon as React.ReactElement, { size: 12 })}
+                  {/* {React.cloneElement(config.icon as React.ReactElement, { size: 12 })} */}
+                  {React.cloneElement(config.icon as React.ReactElement)}
                 </div>
 
                 <div className="flex items-center justify-between p-4 rounded-[20px] bg-gray-50 dark:bg-white/[0.03] border border-transparent hover:border-gray-200 dark:hover:border-white/10 transition-all">

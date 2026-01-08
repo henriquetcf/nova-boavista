@@ -1,21 +1,26 @@
 'use client'
-import { ArrowLeft, Car, User, FileText, CheckCircle2, Clock, ShieldCheck, CreditCard } from 'lucide-react';
+import { ArrowLeft, Car, User, CheckCircle2, Clock, ShieldCheck, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import ProcessDrawer from '../process/ProcessDrawer';
 import { useState, useEffect } from 'react';
 import { ProcessTimeline } from '../process/ProcessTimeline';
 import { useUpdateProcessStore } from '@/store/process/update_process_store';
-import { Process } from '@prisma/client';
-// import { useProcessDetailStore } from '@/store/useProcessDetailStore';
+import { ProcessEntity } from '@/domain/entities/process.entity';
 
-export function ProcessDetailView({ entity, type, onBack }: { entity: Process, type: 'PROCESS' | 'CLIENT', onBack: () => void }) {
+interface ProcessDetailStore {
+  entity: ProcessEntity,
+  type: 'PROCESS' | 'CLIENT',
+  onBack: () => void
+}
+
+export function ProcessDetailView({ entity, type, onBack }: ProcessDetailStore) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { setFormData, formData } = useUpdateProcessStore();
 
   // Sincroniza a store com a entidade recebida via props
   useEffect(() => {
     if (entity) setFormData(entity);
-  }, [entity.status, entity.createdAt, setFormData]);
+  }, [entity, setFormData]);
 
   const isProcess = type === 'PROCESS';
 
@@ -53,11 +58,11 @@ export function ProcessDetailView({ entity, type, onBack }: { entity: Process, t
               </span>
             </div>
             <h2 className="text-6xl font-black uppercase italic tracking-tighter text-gray-900 dark:text-white leading-none mb-3">
-              {isProcess ? entity.plate : entity.name}
+              {isProcess ? entity.plate : entity.clientName || entity.client.name}
             </h2>
             {isProcess && (
               <p className="text-[12px] font-bold text-gray-400 uppercase tracking-[0.2em] flex items-center justify-center md:justify-start gap-2">
-                <ShieldCheck size={14} className="text-[#800020]" /> {entity.brandModel || 'Modelo não especificado'} • {entity.renavam || 'Sem Renavam'}
+                <ShieldCheck size={14} className="text-[#800020]" /> {'Modelo não especificado'} • {entity.renavam || 'Sem Renavam'}
               </p>
             )}
           </div>
@@ -90,7 +95,7 @@ export function ProcessDetailView({ entity, type, onBack }: { entity: Process, t
               </div>
             </div>
             
-            <ProcessTimeline process={entity} limit={5} />
+            <ProcessTimeline limit={2} />
           </div>
         </div>
 
@@ -144,13 +149,13 @@ export function ProcessDetailView({ entity, type, onBack }: { entity: Process, t
                <QuickInfo label="Placa Veicular" value={entity.plate} />
                <QuickInfo 
                   label="Pasta de Documentos" 
-                  value={`${entity.documents?.filter((d:any)=>d.isUploaded).length || 0} de ${entity.documents?.length || 0}`} 
-                  status={entity.documents?.every((d:any)=>d.isUploaded) ? 'success' : 'warning'}
+                  value={`${entity.documents?.filter((d)=>d.isUploaded).length || 0} de ${entity.documents?.length || 0}`} 
+                  status={entity.documents?.every((d)=>d.isUploaded) ? 'success' : 'warning'}
                />
                <QuickInfo 
                   label="Quitação Financeira" 
-                  value={`${entity.services?.filter((t:any)=>t.isPaid).length || 0} de ${entity.services?.length || 0}`} 
-                  status={entity.services?.every((s:any)=>s.isPaid) ? 'success' : 'warning'}
+                  value={`${entity.services?.filter((t)=>t.isPaid).length || 0} de ${entity.services?.length || 0}`} 
+                  status={entity.services?.every((s)=>s.isPaid) ? 'success' : 'warning'}
                />
             </div>
           </div>

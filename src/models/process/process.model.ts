@@ -18,6 +18,7 @@ const ServiceItemSchema = z.object({
 });
 
 export const  ProcessSchema = z.object({
+  id: z.string().optional(),
   plate: z.string()
     .min(7, "Placa incompleta")
     .max(8, "Placa inválida")
@@ -36,6 +37,7 @@ export const  ProcessSchema = z.object({
   
   // Validando o ID do cliente
   clientId: z.string().min(1, "Selecione um cliente"),
+  clientName: z.string().optional(),
   
   // Validando o array de serviços
   services: z.array(ServiceItemSchema)
@@ -43,8 +45,7 @@ export const  ProcessSchema = z.object({
   
   // Como o totalValue na Store geralmente já é calculado, 
   // garantimos que ele aceite o formato string/number
-  totalValue: z.union([z.string(), z.number()])
-    .transform((val) => typeof val === "string" ? parseFloat(val) : val),
+  totalValue: z.string(),
 });
 
 // Tipagens para o Front-end e Store

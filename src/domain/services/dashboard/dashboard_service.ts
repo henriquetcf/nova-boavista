@@ -1,4 +1,6 @@
 "use server"
+import { ProcessEntity } from "@/domain/entities/process.entity";
+import { EntityMapper } from "@/domain/infra/mappers/entity-mapper";
 import { prisma } from "@/lib/prisma/prisma";
 
 const SERVICE_SLA: Record<string, number> = {
@@ -142,18 +144,9 @@ export async function searchGlobalAction(query: string) {
       take: 5 // Limita para não sobrecarregar o dropdown
     });
 
-    return results
+    const processes = EntityMapper.deserializeList(ProcessEntity, results);
 
-    // return results.map(proc => ({
-    //   id: proc.id,
-    //   type: 'PROCESS',
-    //   plate: proc.plate,
-    //   clientName: proc.client.name,
-    //   status: proc.status,
-    //   // Campos extras para a EntityDetailView
-    //   totalProfit: proc.profit ?? 0,
-    //   updatedAt: proc.updatedAt
-    // }));
+    return processes;
   } catch (error) {
     console.error("Erro na busca global:", error);
     return [];
@@ -163,7 +156,7 @@ export async function searchGlobalAction(query: string) {
 export async function getEntityDetailsAction(id: string, type: 'PROCESS' | 'CLIENT') {
   try {
     if (type === 'PROCESS') {
-      return await prisma.process.findUnique({
+      const result = await prisma.process.findUnique({
         where: { id },
         include: {
           client: true,
@@ -175,6 +168,8 @@ export async function getEntityDetailsAction(id: string, type: 'PROCESS' | 'CLIE
           }
         }
       });
+      const process = EntityMapper.deserialize(ProcessEntity, result);
+      return process;
     }
     // Lógica para CLIENT se necessário...
   } catch (error) {

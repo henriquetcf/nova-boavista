@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { 
   Landmark, Plus, ArrowRight, ShieldCheck, CreditCard
 } from 'lucide-react';
@@ -24,12 +24,13 @@ export function AddBankAccountDrawer({ isOpen, onClose, onSave }: AddAccountDraw
   const { startLoading, stopLoading } = useLoading();  
 
   useEffect(() => {
-    if (isOpen && availableBanks.length === 0) {
+    if (isOpen) {
       startLoading("Sincronizando contas...");
       fetchAvailableBanks().finally(() => stopLoading());
     }
   }, [isOpen]);
 
+  if (!isOpen || isLoading) return null;
   // Se o store estiver em loading, mostramos um estado de espera dentro do drawer ou nem abrimos
   // Aqui optei por deixar o DrawerWrapper lidar com a visibilidade
   

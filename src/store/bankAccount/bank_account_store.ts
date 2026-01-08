@@ -1,19 +1,11 @@
 import { create } from 'zustand';
 import { Bank } from '@prisma/client';
-import { fetchAvailableBanksAction, fetchBankAccountsAction } from '@/models/bank/bank.service';
+import { BankAccountEntity } from '@/domain/entities/bank-account.entity';
+import { fetchAvailableBanksAction, fetchBankAccountsAction } from '@/domain/services/bank/bank.service';
 
 // Interface baseada no seu Prisma Model
-interface BankAccountPopulated {
-  id: string;
-  cnpj: string;
-  agency: string;
-  account: string;
-  balance: string; // Decimal vem como string do Prisma/DB
-  bank: Bank;
-}
-
 interface BankDataState {
-  accounts: BankAccountPopulated[];
+  accounts: BankAccountEntity[];
   availableBanks: Bank[]; // Para o SearchableSelect do Drawer
   isLoading: boolean;
   isBalancesVisible: boolean;
@@ -51,7 +43,7 @@ export const useBankDataStore = create<BankDataState>((set) => ({
     try {
       // Aqui você faz o fetch das contas do usuário
       const result = await fetchBankAccountsAction();
-      set({ accounts: result.accounts as BankAccountPopulated[] });
+      set({ accounts: result.accounts });
     } finally {
       set({ isLoading: false });
     }
