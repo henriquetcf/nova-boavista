@@ -5,13 +5,14 @@ import { NextResponse } from "next/server"
 const { auth: nextAuthHandler } = NextAuth(authConfig)
 
 export default nextAuthHandler((req) => {
-  const { nextUrl, cookies } = req
+  const { nextUrl } = req;
+  const { cookies } = req;
   
   // Pega a chave das variáveis de ambiente
   const MASTER_KEY = process.env.MASTER_KEY;
 
   // 1. Verifica se o cara já passou pela barreira antes (via cookie)
-  const hasGlobalAccess = cookies.has("global-access-granted2");
+  const hasGlobalAccess = cookies.has("global-access-granted");
   
   // 2. Verifica se ele está tentando passar a chave agora pela URL
   const urlKey = nextUrl.searchParams.get("key");
