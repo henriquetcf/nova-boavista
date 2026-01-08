@@ -1,5 +1,5 @@
 import { ProcessSchema } from '@/models/process/process.model';
-import { createProcessAction } from '@/services/process/process.service';
+import { createProcessAction } from '@/domain/services/process/process.service';
 import { create } from 'zustand';
 
 interface Service {
@@ -76,9 +76,9 @@ export const useProcessStore = create<ProcessStore>((set, get) => ({
     // return false;
     const result = await createProcessAction(formData);
 
-    if (result.errors) {
-      console.log(result.errors);
-      set({ errors: result.errors, isLoading: false });
+    if (!result.success) {
+      console.log('[CREATE PROCESS STORE] CREATE ERROR', result);
+      set({ errors: {'error': [result.message]}, isLoading: false });
       // set({ isLoading: false });
       return false;
       // return { error: result.error };
@@ -149,7 +149,7 @@ export const useProcessStore = create<ProcessStore>((set, get) => ({
         const fieldName = String(issue.path[0]);
         fieldErrors[fieldName] = issue.message;
       });
-      set({ errors: fieldErrors, isLoading: false });
+      set({ errors: fieldErrors as any, isLoading: false });
       return false;
     }
 

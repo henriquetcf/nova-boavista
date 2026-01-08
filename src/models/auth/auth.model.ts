@@ -14,7 +14,7 @@ export const LoginSchema = z.object({
   email: z.string().email("E-mail inválido"),
   password: z.string()
     .min(6, "A senha deve ter pelo menos 6 caracteres")
-    .regex(/[A-Z]/, "A senha deve conter pelo menos uma letra maiúscula"),
+    // .regex(/[A-Z]/, "A senha deve conter pelo menos uma letra maiúscula"),
 });
 
 export type RegisterInput = z.infer<typeof RegisterSchema>

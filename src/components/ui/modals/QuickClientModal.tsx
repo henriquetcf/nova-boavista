@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { UserPlus, ShieldCheck, Smartphone, Fingerprint, Save } from "lucide-react";
 import { FormField } from "../FormField";
 import { Button } from "../Button";
-import { createClientAction } from "@/services/client/client.service";
+import { createClientAction } from "@/domain/services/client/client.service";
 import { ModalWrapper } from "./wrapper/ModalWrapper";
 import { formatUtils } from "@/lib/formatUtils";
 

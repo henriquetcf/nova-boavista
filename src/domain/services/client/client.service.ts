@@ -1,4 +1,6 @@
 "use server"
+import { ClientEntity } from "@/domain/entities/client.entity";
+import { EntityMapper } from "@/domain/infra/mappers/entity-mapper";
 import { prisma } from "@/lib/prisma/prisma";
 import { revalidatePath } from "next/cache";
 
@@ -27,7 +29,9 @@ export async function createClientAction(data: { name: string; document: string;
 export async function fetchClientsAction(query?: string) {
   try {
     // if (!query) return [];
-    const clients = await prisma.client.findMany();
+    const results = await prisma.client.findMany();
+
+    const clients = EntityMapper.deserialize(ClientEntity, results);
     console.log('clientes', clients);
     // return clients;
     return { success: true, clients };
@@ -43,13 +47,15 @@ export async function fetchClientsAction(query?: string) {
 export async function searchClientsAction(query: string) {
   try {
     // if (!query) return [];
-    const clients = await prisma.client.findMany({
+    const results = await prisma.client.findMany({
       where: {
         name: { contains: query, mode: 'insensitive' }
       },
       take: 10, // Retorna só os 10 melhores resultados
       // select: { id: true, name: true }
     });
+
+    const clients = EntityMapper.deserialize(ClientEntity, results);
     console.log('clientes', clients);
     // return clients;
     return { success: true, clients };

@@ -29,7 +29,7 @@ model Client {
   createdAt    DateTime              @default(now())
   updatedAt    DateTime              @updatedAt
   processes    Process[]
-  transactions TransactionMoviment[]
+  transactions TransactionMovement[]
 }
 
 model Service {
@@ -74,7 +74,7 @@ model Process {
   user         User                  @relation(fields: [userId], references: [id])
   movements    ProcessMovement[]
   services     ServiceItem[]
-  transactions TransactionMoviment[]
+  transactions TransactionMovement[]
 }
 
 model Document {
@@ -106,11 +106,11 @@ model BankAccount {
   balance                Decimal
   bankId                 String
   bank                   Bank                  @relation(fields: [bankId], references: [id])
-  movementsAsDestination TransactionMoviment[] @relation("DestinationMovements")
-  movementsAsOrigin      TransactionMoviment[] @relation("OriginMovements")
+  movementsAsDestination TransactionMovement[] @relation("DestinationMovements")
+  movementsAsOrigin      TransactionMovement[] @relation("OriginMovements")
 }
 
-model TransactionMoviment {
+model TransactionMovement {
   id                   String          @id @default(cuid())
   type                 TransactionType
   method               PaymentMethod

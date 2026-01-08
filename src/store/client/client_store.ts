@@ -1,4 +1,4 @@
-import { fetchClientsAction, searchClientsAction } from "@/services/client/client.service";
+import { fetchClientsAction, searchClientsAction } from "@/domain/services/client/client.service";
 import { create } from "zustand";
 
 interface Client {

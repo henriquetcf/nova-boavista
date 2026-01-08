@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { registerAction } from '@/services/auth/auth.service'
+import { registerAction } from '@/domain/services/auth/auth.service'
 import { LoginInput, LoginSchema, RegisterInput, RegisterSchema } from '@/models/auth/auth.model'
 import { signIn } from 'next-auth/react';
 

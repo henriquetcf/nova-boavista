@@ -1,5 +1,5 @@
 import { ServiceSchema } from '@/models/services/services.model';
-import { createServiceAction } from '@/services/services/service.service';
+import { createServiceAction } from '@/domain/services/services/service.service';
 import { create } from 'zustand';
 
 // Lista de documentos padrão para todo despachante

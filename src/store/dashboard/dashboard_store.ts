@@ -1,4 +1,4 @@
-import getDashboardData, { getEntityDetailsAction, searchGlobalAction } from '@/services/dashboard/dashboard_service';
+import getDashboardData, { getEntityDetailsAction, searchGlobalAction } from '@/domain/services/dashboard/dashboard_service';
 import { create } from 'zustand';
 
 interface Dashboard {

@@ -1,4 +1,4 @@
-import { fetchServicesAction, searchServicesAction } from '@/services/services/service.service';
+import { fetchServicesAction, searchServicesAction } from '@/domain/services/services/service.service';
 import { Service } from '@prisma/client';
 import { create } from 'zustand';
 

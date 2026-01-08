@@ -2,7 +2,7 @@
 import { useState, useTransition } from "react";
 import { X, Save, FileText, Info, Check, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { createServiceAction } from "@/services/services/service.service";
+import { createServiceAction } from "@/domain/services/services/service.service";
 import { FormField } from "@/components/ui/FormField";
 import { DEFAULT_DOCUMENTS, useServiceStore } from "@/store/services/create_service_store";
 import { Button } from "@/components/ui/Button";

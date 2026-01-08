@@ -3,7 +3,7 @@ import { create } from 'zustand';
 import { Status } from '@prisma/client';
 import { ProcessSchema } from '@/models/process/process.model'; // Reaproveitando o schema se for igual
 import { toast } from 'sonner';
-import { updateProcessStatusAction } from '@/services/process/process.service';
+import { updateProcessStatusAction } from '@/domain/services/process/process.service';
 
 interface Service {
   id: string;

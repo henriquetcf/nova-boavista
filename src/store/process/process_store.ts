@@ -1,4 +1,4 @@
-import { fetchProcessesAction, toggleDocStatusAction } from "@/services/process/process.service";
+import { fetchProcessesAction, toggleDocStatusAction } from "@/domain/services/process/process.service";
 import { Status } from "@prisma/client";
 import { check } from "zod";
 import { create } from "zustand";
