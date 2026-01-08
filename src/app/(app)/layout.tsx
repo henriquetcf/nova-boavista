@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
@@ -6,7 +7,6 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Navbar from "@/components/navigation/Navbar";
 import { AppLoading } from "@/components/AppLoading";
-import 'reflect-metadata'; // TEM QUE SER A PRIMEIRA LINHA
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { instanceToPlain } from 'class-transformer';
 
 export abstract class BaseEntity<T> {

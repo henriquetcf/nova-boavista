@@ -2,9 +2,9 @@ import authConfig from "./auth.config"
 import NextAuth from "next-auth"
 import { NextResponse } from "next/server"
 
-const { auth } = NextAuth(authConfig)
+const { auth: nextAuthHandler } = NextAuth(authConfig)
 
-export default auth((req) => {
+export default nextAuthHandler((req) => {
   const { nextUrl, cookies } = req
   
   // Pega a chave das variáveis de ambiente

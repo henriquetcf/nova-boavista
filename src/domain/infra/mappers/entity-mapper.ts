@@ -1,6 +1,6 @@
 // src/infra/mappers/entity-mapper.ts
+import 'reflect-metadata';
 import { plainToInstance, instanceToPlain, ClassConstructor, ClassTransformOptions } from 'class-transformer';
-import 'reflect-metadata'; // TEM QUE SER A PRIMEIRA LINHA
 
 export class EntityMapper {
   private static readonly defaultOptions: ClassTransformOptions = {
