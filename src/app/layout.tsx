@@ -1,8 +1,8 @@
+import "reflect-metadata";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
-import { AppLoading } from "@/components/AppLoading";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,9 +25,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
 
-  // const session = await auth();
-  // // if (!session) redirect("/login");
-  // // if (session.user) redirect("/dashboard");
   return (
     <html lang="en" suppressHydrationWarning>
       <body

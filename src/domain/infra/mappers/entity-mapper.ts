@@ -1,4 +1,3 @@
-// src/infra/mappers/entity-mapper.ts
 import 'reflect-metadata';
 import { plainToInstance, instanceToPlain, ClassConstructor, ClassTransformOptions } from 'class-transformer';
 

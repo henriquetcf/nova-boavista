@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { Type } from 'class-transformer';
 import { BaseEntity } from './base.entity';
 import { ServiceEntity } from './service.entity';   // Essa já temos
